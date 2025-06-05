@@ -1,5 +1,5 @@
 import type React from "react"
-import { MapPin, Star } from "lucide-react"
+import { MapPin, MessageCircle, Star } from "lucide-react"
 import Image from "next/image"
 
 interface FarmsCardProps {
@@ -16,7 +16,10 @@ const FarmsCard: React.FC<FarmsCardProps> = ({ id, name, location, image, profil
   return (
     <div className="w-full ">
       {/* Main Farm Image */}
-      <div className="w-full">
+      <div className="w-full relative">
+          <div className="bg-white w-[50px] h-[50px] rounded-full absolute top-4 right-4 flex items-center justify-center shadow-lg cursor-pointer">
+                  <MessageCircle className=" text-" />
+              </div>
         <Image
           src={image || "/placeholder.svg?height=180&width=320&query=farm field with workers" || "/placeholder.svg"}
             width={1000}
@@ -32,6 +35,7 @@ const FarmsCard: React.FC<FarmsCardProps> = ({ id, name, location, image, profil
         <div className="space-y-1 sm:space-y-1.5 md:space-y-2 lg:space-y-1">
           <div className="flex items-center gap-2 sm:gap-2.5 md:gap-3 lg:gap-2">
             <div className="rounded-full overflow-hidden w-[40px] h-[40px] sm:w-[45px] sm:h-[45px] md:w-[55px] md:h-[55px] lg:w-[50px] lg:h-[50px] flex-shrink-0">
+            
               <Image
                 width={1000}
                 height={1000}
