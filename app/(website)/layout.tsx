@@ -10,11 +10,11 @@ interface LayoutProps {
 
 const Layout = ({ children }: LayoutProps) => {
   return (
-    <div >
+    <div>
       <Navbar />
-     {children}
-     <Testimonial/>
-     <Footer />
+      {children} {/* This will render the page content */}
+      <Testimonial />
+      <Footer />
     </div>
   );
 }
