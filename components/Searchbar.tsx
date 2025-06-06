@@ -1,0 +1,63 @@
+import { Search, MapPin } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+
+export default function Searchbar() {
+  return (
+    <div className=" max-w-5xl px-2 sm:px-4 md:px-6 lg:px-8">
+      <div className="bg-white rounded-xl sm:rounded-2xl lg:rounded-[999px] shadow-lg sm:shadow-xl lg:shadow-2xl p-2 sm:p-3 md:p-4 lg:p-6">
+        <div className="flex gap-2 sm:gap-3 md:gap-4 lg:gap-6 items-stretch sm:items-center">
+          {/* Where Section */}
+          <div className="flex-1 sm:border-r sm:border-gray-200 sm:pr-3 md:pr-4 lg:pr-6">
+            <div className="space-y-1 sm:space-y-1.5">
+              <label className="text-xs sm:text-sm font-semibold text-gray-900  uppercase sm:normal-case tracking-wide sm:tracking-normal hidden md:block">
+                Where
+              </label>
+              <div className="relative">
+                <MapPin className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 hidden md:block" />
+                <Input
+                  type="text"
+                  placeholder="Search destinations"
+                  className="pl-7 sm:pl-10 md:pl-12 border-0 text-gray-600 placeholder:text-gray-400 focus-visible:ring-0 focus-visible:ring-offset-0 text-xs sm:text-sm md:text-base h-9 sm:h-10 md:h-12 w-full"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Filter Section */}
+          <div className="flex-1 sm:pl-3 md:pl-4 lg:pl-6">
+            <div className="space-y-1 sm:space-y-1.5">
+              <label className="text-xs sm:text-sm font-semibold text-gray-900 hidden md:block uppercase sm:normal-case tracking-wide sm:tracking-normal">
+                Category
+              </label>
+              <Select defaultValue="all">
+                <SelectTrigger className="border-0 focus:ring-0 focus:ring-offset-0 bg-transparent text-xs sm:text-sm md:text-base h-9 sm:h-10 md:h-12 w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All</SelectItem>
+                  <SelectItem value="hotels">Hotels</SelectItem>
+                  <SelectItem value="restaurants">Restaurants</SelectItem>
+                  <SelectItem value="attractions">Attractions</SelectItem>
+                  <SelectItem value="activities">Activities</SelectItem>
+                  <SelectItem value="shopping">Shopping</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          {/* Search Button */}
+          <div className="flex items-end pb-0 sm:pb-1">
+            <Button
+              size="icon"
+              className="bg-green-500 hover:bg-green-600 rounded-full w-9 h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 shadow-lg transition-all duration-200 hover:shadow-xl hover:scale-105 flex items-center justify-center"
+            >
+              <Search className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 lg:w-6 lg:h-6 text-white" />
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}

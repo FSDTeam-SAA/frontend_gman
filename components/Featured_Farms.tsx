@@ -59,7 +59,7 @@ const farmsData = [
 
 const Featured_Farms = () => {
   return (
-    <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 mt-[100px]">
       <div>
         <h2 className="text-3xl text-[#272727] font-semibold mb-8">
           Featured Farms

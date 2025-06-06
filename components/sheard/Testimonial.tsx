@@ -96,7 +96,7 @@ export default function TestimonialCarousel() {
                     <p className="text-base text-[#272727] font-normal leading-[150%] flex-grow">
                       {testimonial.text}
                     </p>
-                    <div className="flex items-center gap-3 mt-auto">
+                    <div className="flex items-center gap-3 mt-6">
                       <Image
                         src={testimonial.avatar || "/placeholder.svg"}
                         alt={testimonial.author}
@@ -104,11 +104,11 @@ export default function TestimonialCarousel() {
                         height={40}
                         className="rounded-full"
                       />
-                      <div>
-                        <p className="font-medium text-sm">
+                      <div >
+                        <p className="font-medium text-[#595959] text-[18px]">
                           {testimonial.author}
                         </p>
-                        <p className="text-xs text-gray-500">
+                        <p className="text-sm text-[#6B7280] font-normal">
                           {testimonial.location}
                         </p>
                       </div>
