@@ -15,10 +15,30 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { LogOut, ShoppingBag, User } from "lucide-react"
+import { usePathname } from "next/navigation"
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const isLoggedIn = true // This would be determined by your auth state
+
+  const pathname = usePathname()
+
+  const navLinks = [
+    { name: "Home", href: "/" },
+    { name: "About", href: "/about" },
+    { name: "Mission", href: "/mission" },
+    { name: "Become a Seller", href: "/become-seller" },
+    { name: "Blog", href: "/blog" },
+    { name: "FAQ", href: "/faq" },
+    { name: "Contact", href: "/contact" },
+  ]
+
+  const isActive = (href: string) => {
+    if (href === "/") {
+      return pathname === "/"
+    }
+    return pathname.startsWith(href)
+  }
 
   return (
     <header className="sticky top-0 z-50 border-b bg-background">
@@ -29,21 +49,15 @@ export function Navbar() {
             <span className="sr-only">Toggle menu</span>
           </Button>
           <Link href="/" className="flex items-center gap-2">
-            <Image
-                            src="/asset/logo.png"
-                            width={40}
-                            height={53}
-                            alt="Table Fresh Logo"
-                            className="h-[53px] w-[40px]"
-                          />
-                          <div className="flex flex-col">
-                            <div className="">
-                              <p className="text-[16px] font-semibold text-black">TABLE</p>
-                              <p className="text-[16px] font-normal text-[#039B06]">FRESH</p>
-                            </div>
-                            
-                            <span className="text-[6px] font-medium leading-[120%] space-x-[5%] text-[#8F8F8F]">Fresh & Healthy</span>
-                          </div>
+            <Image src="/asset/logo.png" width={40} height={53} alt="Table Fresh Logo" className="h-[53px] w-[40px]" />
+            <div className="flex flex-col">
+              <div className="">
+                <p className="text-[16px] font-semibold text-black">TABLE</p>
+                <p className="text-[16px] font-normal text-[#039B06]">FRESH</p>
+              </div>
+
+              <span className="text-[6px] font-medium leading-[120%] space-x-[5%] text-[#8F8F8F]">Fresh & Healthy</span>
+            </div>
           </Link>
         </div>
 
@@ -54,69 +68,21 @@ export function Navbar() {
           )}
         >
           <ul className="flex w-full flex-col items-start gap-2 md:flex-row md:items-center md:gap-6">
-            <li>
-              <Link
-                href="/"
-                className="text-sm font-medium text-green-600 hover:text-green-700"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Home
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/about"
-                className="text-sm font-medium hover:text-green-700"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                About
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/mission"
-                className="text-sm font-medium hover:text-green-700"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Mission
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/become-seller"
-                className="text-sm font-medium hover:text-green-700"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Become a Seller
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/blog"
-                className="text-sm font-medium hover:text-green-700"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Blog
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/faq"
-                className="text-sm font-medium hover:text-green-700"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                FAQ
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/contact"
-                className="text-sm font-medium hover:text-green-700"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Contact
-              </Link>
-            </li>
+            {navLinks.map((link) => (
+              <li key={link.name}>
+                <Link
+                  href={link.href}
+                  className={`text-base font-medium transition-colors relative ${
+                    isActive(link.href)
+                      ? "text-[#039B06] font-semibold after:content-[''] after:absolute after:left-0 after:bottom-[-5px] after:w-full after:h-[2px] after:bg-[#039B06]"
+                      : "text-[#272727] after:content-[''] after:absolute after:left-1/2 after:bottom-[-5px] after:w-0 after:h-[2px] after:bg-[#039B06] hover:after:w-full hover:after:left-0 hover:text-[#039B06] hover:font-semibold"
+                  }`}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  {link.name}
+                </Link>
+              </li>
+            ))}
           </ul>
         </nav>
 
