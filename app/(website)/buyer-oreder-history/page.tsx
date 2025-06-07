@@ -17,6 +17,7 @@ import { OrderSummaryModal } from "./_components/order-summary-modal"
 
 export default function OrderHistoryPage() {
   const [isModalOpen, setIsModalOpen] = useState(false)
+  // eslint-disable-next-line
   const [selectedOrder, setSelectedOrder] = useState<any>(null)
 
   const orders = Array.from({ length: 8 }, (_, i) => ({
@@ -28,6 +29,7 @@ export default function OrderHistoryPage() {
     status: i % 4 === 1 ? "Pending" : i % 4 === 3 ? "Cancelled" : "Delivered",
   }))
 
+  // eslint-disable-next-line
   const handleOpenDetails = (order: any) => {
     setSelectedOrder(order)
     setIsModalOpen(true)
