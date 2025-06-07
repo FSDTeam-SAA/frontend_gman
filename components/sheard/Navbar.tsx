@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
@@ -15,13 +15,44 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { LogOut, ShoppingBag, User } from "lucide-react"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
+import { clearAuthCookies } from "@/lib/auth"
+import { toast } from "sonner"
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const isLoggedIn = true // This would be determined by your auth state
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [userRole, setUserRole] = useState<string | null>(null)
+  const [userName, setUserName] = useState<string>("")
 
   const pathname = usePathname()
+  const router = useRouter()
+
+  // Check authentication status on component mount
+  useEffect(() => {
+    const checkAuthStatus = () => {
+      const accessToken = document.cookie
+        .split("; ")
+        .find((row) => row.startsWith("accessToken="))
+        ?.split("=")[1]
+
+      const role = document.cookie
+        .split("; ")
+        .find((row) => row.startsWith("userRole="))
+        ?.split("=")[1]
+
+      setIsLoggedIn(!!accessToken)
+      setUserRole(role || null)
+
+      // You can decode the JWT token to get user name if needed
+      // For now, we'll use a placeholder
+      if (accessToken) {
+        setUserName("User") // You can decode JWT or fetch user data here
+      }
+    }
+
+    checkAuthStatus()
+  }, [])
 
   const navLinks = [
     { name: "Home", href: "/" },
@@ -40,6 +71,52 @@ export function Navbar() {
     return pathname.startsWith(href)
   }
 
+  const handleLogout = () => {
+    clearAuthCookies()
+    setIsLoggedIn(false)
+    setUserRole(null)
+    setUserName("")
+    toast.success("Logged out successfully!")
+    router.push("/")
+  }
+
+  const getProfileLink = () => {
+    switch (userRole) {
+      case "admin":
+        return "/dashboard"
+      case "seller":
+        return "/dashboard"
+      case "user":
+        return "/buyer-profile"
+      default:
+        return "/buyer-profile"
+    }
+  }
+
+  const getOrderHistoryLink = () => {
+    switch (userRole) {
+      case "admin":
+        return "/dashboard"
+      case "seller":
+        return "/dashboard"
+      case "user":
+        return "/buyer-order-history"
+      default:
+        return "/buyer-order-history"
+    }
+  }
+
+  const getUserInitials = () => {
+    return (
+      userName
+        .split(" ")
+        .map((name) => name.charAt(0))
+        .join("")
+        .toUpperCase()
+        .slice(0, 2) || "U"
+    )
+  }
+
   return (
     <header className="sticky top-0 z-50 border-b bg-background">
       <div className="container mx-auto flex h-[90px] items-center justify-between">
@@ -49,13 +126,18 @@ export function Navbar() {
             <span className="sr-only">Toggle menu</span>
           </Button>
           <Link href="/" className="flex items-center gap-2">
-            <Image src="/asset/logo.png" width={40} height={53} alt="Table Fresh Logo" className="h-[53px] w-[40px]" />
+            <Image
+              src="/asset/logo.png"
+              width={40}
+              height={53}
+              alt="Table Fresh Logo"
+              className="h-[53px] w-[40px]"
+            />
             <div className="flex flex-col">
               <div className="">
                 <p className="text-[16px] font-semibold text-black">TABLE</p>
                 <p className="text-[16px] font-normal text-[#039B06]">FRESH</p>
               </div>
-
               <span className="text-[6px] font-medium leading-[120%] space-x-[5%] text-[#8F8F8F]">Fresh & Healthy</span>
             </div>
           </Link>
@@ -102,24 +184,26 @@ export function Navbar() {
               <DropdownMenuTrigger asChild>
                 <Avatar className="h-8 w-8 border border-[#039B06] cursor-pointer">
                   <AvatarImage src="/placeholder.svg?height=32&width=32" alt="User" />
-                  <AvatarFallback>BE</AvatarFallback>
+                  <AvatarFallback>{getUserInitials()}</AvatarFallback>
                 </Avatar>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
                 <DropdownMenuItem asChild>
-                  <Link href="/buyer-profile" className="w-full cursor-pointer">
+                  <Link href={getProfileLink()} className="w-full cursor-pointer">
                     <User className="mr-2 h-4 w-4" />
-                    Profile
+                    {userRole === "admin" || userRole === "seller" ? "Dashboard" : "Profile"}
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/buyer-oreder-history" className="w-full cursor-pointer">
-                    <ShoppingBag className="mr-2 h-4 w-4" />
-                    Order history
-                  </Link>
-                </DropdownMenuItem>
+                {userRole === "user" && (
+                  <DropdownMenuItem asChild>
+                    <Link href={getOrderHistoryLink()} className="w-full cursor-pointer">
+                      <ShoppingBag className="mr-2 h-4 w-4" />
+                      Order history
+                    </Link>
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="cursor-pointer">
+                <DropdownMenuItem className="cursor-pointer" onClick={handleLogout}>
                   <LogOut className="mr-2 h-4 w-4" />
                   Log out
                 </DropdownMenuItem>
@@ -132,7 +216,7 @@ export function Navbar() {
               </Button>
             </Link>
           )}
-          <Button variant="outline" size="sm" className="hidden md:flex  text-white bg-[#039B06]">
+          <Button variant="outline" size="sm" className="hidden md:flex text-white bg-[#039B06]">
             <Heart className="mr-2 h-4 w-4" />
             Donate
           </Button>
