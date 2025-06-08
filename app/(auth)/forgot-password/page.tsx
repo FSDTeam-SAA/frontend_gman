@@ -31,12 +31,8 @@ export default function ForgotPasswordPage() {
       } else {
         toast.error(response.message || "Failed to send OTP")
       }
-    } catch (error) {
-      const errorMessage =
-        typeof error === "object" && error !== null && "message" in error
-          ? (error as { message?: string }).message
-          : undefined
-      toast.error(errorMessage || "An error occurred")
+    } catch {
+      toast.error("An error occurred")
     } finally {
       setIsLoading(false)
     }

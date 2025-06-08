@@ -49,12 +49,8 @@ export default function ResetPasswordPage() {
       } else {
         toast.error(response.message || "Failed to reset password");
       }
-    } catch (error) {
-      if (error instanceof Error) {
-        toast.error(error.message || "An error occurred");
-      } else {
-        toast.error("An error occurred");
-      }
+    } catch {
+      toast.error("An error occurred");
     } finally {
       setIsLoading(false);
     }

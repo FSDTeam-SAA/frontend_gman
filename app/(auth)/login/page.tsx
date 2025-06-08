@@ -60,21 +60,21 @@ export default function LoginPage() {
         setAuthCookies(response.data.accessToken, response.data.refreshToken, user)
         toast.success("Login successful!")
 
-        // Redirect based on user role
+        // Redirect based on user role after login
         if (response.data.role === "admin") {
           router.push("/dashboard")
         } else if (response.data.role === "seller") {
-          router.push("/dashboard")
+          router.push("/dashboard") // Seller dashboard
         } else if (response.data.role === "buyer") {
-          router.push("/")
+          router.push("/") // Home page for buyers
         } else {
           router.push(redirectTo || "/")
         }
       } else {
         toast.error(response.message || "Login failed")
       }
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : "An error occurred")
+    } catch {
+      toast.error("An error occurred during login")
     } finally {
       setIsLoading(false)
     }
@@ -113,8 +113,8 @@ export default function LoginPage() {
             </div>
           </div>
 
-          <h1 className="text-4xl font-bold mb-4">Welcome to Table Fresh</h1>
-          <p className="text-lg opacity-90">Discover fresh, local produce from farms around the world</p>
+          <h1 className="text-4xl font-bold mb-4">Welcome Back</h1>
+          <p className="text-lg opacity-90">Sign in to your seller account</p>
         </div>
       </div>
 
@@ -123,7 +123,7 @@ export default function LoginPage() {
         <div className="w-full max-w-md space-y-8">
           <div className="text-center">
             <h2 className="text-3xl font-bold text-gray-900">Welcome back</h2>
-            <p className="mt-2 text-gray-600">Join us and start shopping today</p>
+            <p className="mt-2 text-gray-600">Sign in to your seller account</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -197,8 +197,8 @@ export default function LoginPage() {
             </Button>
 
             <div className="text-center text-sm">
-              <span className="text-gray-600">New To our Platform? </span>
-              <Link href="/register" className="text-green-600 hover:text-green-500 font-medium">
+              <span className="text-gray-600">New to our platform? </span>
+              <Link href="/sign-up" className="text-green-600 hover:text-green-500 font-medium">
                 Sign Up Here
               </Link>
             </div>

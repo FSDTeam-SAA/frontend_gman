@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -13,8 +13,9 @@ import { toast } from "sonner"
 import { ImagePlus } from "lucide-react"
 import Image from "next/image"
 
-export default function SellerSetupPage() {
+export default function SellerPage() {
   const [isLoading, setIsLoading] = useState(false)
+  const [sellerRegisterId, setSellerRegisterId] = useState<string>("")
   const [formData, setFormData] = useState({
     farmName: "",
     description: "",
@@ -24,6 +25,26 @@ export default function SellerSetupPage() {
   const [imageUrls, setImageUrls] = useState<string[]>([])
 
   const router = useRouter()
+
+  useEffect(() => {
+    // Get seller register ID from cookies
+    const getSellerRegisterId = () => {
+      const registerIdFromCookie = document.cookie
+        .split("; ")
+        .find((row) => row.startsWith("sellerRegisterId="))
+        ?.split("=")[1]
+
+      return registerIdFromCookie || ""
+    }
+
+    const registerId = getSellerRegisterId()
+    setSellerRegisterId(registerId)
+
+    if (!registerId) {
+      toast.error("Please complete registration first")
+      router.push("/sign-up")
+    }
+  }, [router])
   const searchParams = useSearchParams()
   // const token = searchParams.get("token") || ""
 
@@ -67,18 +88,26 @@ export default function SellerSetupPage() {
       return
     }
 
+    if (!sellerRegisterId) {
+      toast.error("Seller registration ID is required")
+      return
+    }
+
     setIsLoading(true)
 
     try {
-      // Create FormData for file upload
+      // Create FormData matching the expected backend structure
       const submitData = new FormData()
+
+      // Match the exact field names from your backend payload
       submitData.append("farmName", formData.farmName)
       submitData.append("description", formData.description)
       submitData.append("isOrganic", formData.isOrganic.toString())
+      submitData.append("id", sellerRegisterId) // Using "id" as shown in your payload
 
-      // Add images to FormData
-      images.forEach((image, index) => {
-        submitData.append(`farmImages`, image)
+      // Add images as "media" field (as shown in your payload structure)
+      images.forEach((image) => {
+        submitData.append("media", image)
       })
 
       // Get auth token from cookies if available
@@ -100,6 +129,7 @@ export default function SellerSetupPage() {
 
       if (response.ok && result.success) {
         toast.success("Farm profile created successfully!")
+        // Redirect to login after successful farm profile creation
         router.push("/login")
       } else {
         toast.error(result.message || "Failed to create farm profile")
@@ -112,11 +142,30 @@ export default function SellerSetupPage() {
     }
   }
 
+  // Show loading if seller register ID is not yet determined
+  if (!sellerRegisterId) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading seller information...</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 py-12">
       <div className="container mx-auto px-4 max-w-3xl">
         <div className="bg-white rounded-lg shadow-md p-8">
           <h1 className="text-2xl font-bold mb-6">Set Up Your Seller Profile</h1>
+
+          {/* Display seller register ID for reference */}
+          <div className="mb-6 p-3 bg-green-50 border border-green-200 rounded-md">
+            <p className="text-sm text-green-700">
+              <strong>Seller Registration ID:</strong> {sellerRegisterId}
+            </p>
+          </div>
 
           <form onSubmit={handleSubmit} className="space-y-8">
             {/* Farm Name */}
@@ -149,6 +198,8 @@ export default function SellerSetupPage() {
                           height={1000}
                           alt={`Farm image ${index + 1}`}
                           className="h-full w-full object-cover rounded-md"
+                          width={0}
+                          height={0}
                         />
                         <button
                           type="button"
@@ -203,6 +254,3 @@ export default function SellerSetupPage() {
     </div>
   )
 }
-
-
-
