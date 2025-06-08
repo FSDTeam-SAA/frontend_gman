@@ -17,13 +17,14 @@ export default function VerifyOTPPage() {
   const searchParams = useSearchParams()
 
   const email = searchParams.get("email") || ""
-  const type = searchParams.get("type") // 'reset' for password reset, undefined for registration
+  const type = searchParams.get("type") // Only 'reset' for password reset
 
   useEffect(() => {
-    if (!email) {
+    // Only allow OTP verification for password reset
+    if (!email || type !== "reset") {
       router.push("/login")
     }
-  }, [email, router])
+  }, [email, type, router])
 
   const handleChange = (index: number, value: string) => {
     if (value.length > 1) return
@@ -61,15 +62,14 @@ export default function VerifyOTPPage() {
       if (response.success) {
         toast.success("OTP verified successfully!")
 
+        // Only for password reset
         if (type === "reset") {
-          router.push(`/reset-password?token=${response.accessToken}`)
-        } else {
-          router.push("/login?message=verified")
+          router.push(`/reset-password?token=${response.accessToken || response.data?.accessToken}`)
         }
       } else {
         toast.error(response.message || "Invalid OTP")
       }
-    } catch (error) {
+    } catch {
       toast.error("An error occurred during verification")
     } finally {
       setIsLoading(false)
@@ -108,8 +108,8 @@ export default function VerifyOTPPage() {
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
         <div className="w-full max-w-md space-y-8">
           <div className="text-center">
-            <h2 className="text-3xl font-bold text-gray-900">Reset password</h2>
-            <p className="mt-2 text-gray-600">Enter your email to receive the OTP</p>
+            <h2 className="text-3xl font-bold text-gray-900">Verify OTP</h2>
+            <p className="mt-2 text-gray-600">Enter the 6-digit code sent to your email for password reset</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -117,7 +117,7 @@ export default function VerifyOTPPage() {
               {otp.map((digit, index) => (
                 <Input
                   key={index}
-                  ref={(el) => (inputRefs.current[index] = el)}
+                  ref={(el) => { inputRefs.current[index] = el; }}
                   type="text"
                   inputMode="numeric"
                   maxLength={1}

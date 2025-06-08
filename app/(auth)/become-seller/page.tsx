@@ -2,7 +2,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 
-export default function WhoShouldSellPage() {
+export default function BecomeSellerPage() {
   return (
     <div className="min-h-screen bg-white">
       <div className="container mx-auto py-12 px-4">
@@ -23,7 +23,7 @@ export default function WhoShouldSellPage() {
             <div className="md:w-2/3">
               <p className="text-gray-700">
                 All gardeners, backyard gardeners, organic gardeners, anyone with a garden. Sign up is simple and free.
-                Fill out the registration, add your pictures and you'll appear on the map for everyone to find you. Your
+                Fill out the registration, add your pictures and you&apos;ll appear on the map for everyone to find you. Your
                 exact address will never be made public.
               </p>
             </div>
@@ -42,7 +42,7 @@ export default function WhoShouldSellPage() {
             </div>
             <div className="md:w-2/3">
               <p className="text-gray-700">
-                Bakers, whether you're a small bakery or baking artisan baked goods from your kitchen, you're encouraged
+                Bakers, whether you&apos;re a small bakery or baking artisan baked goods from your kitchen, you&apos;re encouraged
                 to sign up, and increase your sales.
               </p>
             </div>
@@ -61,8 +61,8 @@ export default function WhoShouldSellPage() {
             </div>
             <div className="md:w-2/3">
               <p className="text-gray-700">
-                Jam, jellies, preserves, canned goods with a profile on table fresh, you're neighbors, locals can find
-                you. You can sell you products locally or ship nationwide, and it's free to join.
+                Jam, jellies, preserves, canned goods with a profile on table fresh, you&apos;re neighbors, locals can find
+                you. You can sell you products locally or ship nationwide, and it&apos;s free to join.
               </p>
             </div>
           </div>

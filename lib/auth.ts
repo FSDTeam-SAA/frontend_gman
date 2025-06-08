@@ -1,4 +1,4 @@
-const API_BASE_URL = "https://gman54-backend.onrender.com/api/v1"
+
 
 export interface User {
   _id: string
