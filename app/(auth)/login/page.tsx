@@ -74,7 +74,7 @@ export default function LoginPage() {
         toast.error(response.message || "Login failed")
       }
     } catch (error) {
-      toast.error("An error occurred during login")
+      toast.error(error instanceof Error ? error.message : "An error occurred")
     } finally {
       setIsLoading(false)
     }
