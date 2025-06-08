@@ -42,7 +42,7 @@ export default function WhoShouldSellPage() {
             </div>
             <div className="md:w-2/3">
               <p className="text-gray-700">
-                Bakers, whether you're a small bakery or baking artisan baked goods from your kitchen, you're encouraged
+                Bakers, whether you&quot;re a small bakery or baking artisan baked goods from your kitchen, you&quot;re encouraged
                 to sign up, and increase your sales.
               </p>
             </div>
@@ -61,8 +61,8 @@ export default function WhoShouldSellPage() {
             </div>
             <div className="md:w-2/3">
               <p className="text-gray-700">
-                Jam, jellies, preserves, canned goods with a profile on table fresh, you're neighbors, locals can find
-                you. You can sell you products locally or ship nationwide, and it's free to join.
+                Jam, jellies, preserves, canned goods with a profile on table fresh, you&quot;re neighbors, locals can find
+                you. You can sell you products locally or ship nationwide, and it&quot;s free to join.
               </p>
             </div>
           </div>

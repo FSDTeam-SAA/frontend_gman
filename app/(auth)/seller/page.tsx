@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Checkbox } from "@/components/ui/checkbox"
 import { toast } from "sonner"
 import { ImagePlus } from "lucide-react"
+import Image from "next/image"
 
 export default function SellerSetupPage() {
   const [isLoading, setIsLoading] = useState(false)
@@ -24,7 +25,7 @@ export default function SellerSetupPage() {
 
   const router = useRouter()
   const searchParams = useSearchParams()
-  const token = searchParams.get("token") || ""
+  // const token = searchParams.get("token") || ""
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -142,8 +143,10 @@ export default function SellerSetupPage() {
                   >
                     {index < imageUrls.length ? (
                       <>
-                        <img
+                        <Image
                           src={imageUrls[index] || "/placeholder.svg"}
+                          width={1000}
+                          height={1000}
                           alt={`Farm image ${index + 1}`}
                           className="h-full w-full object-cover rounded-md"
                         />
