@@ -3,7 +3,7 @@
 import type React from "react"
 
 import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -45,6 +45,8 @@ export default function SellerPage() {
       router.push("/sign-up")
     }
   }, [router])
+  const searchParams = useSearchParams()
+  // const token = searchParams.get("token") || ""
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -192,6 +194,8 @@ export default function SellerPage() {
                       <>
                         <Image
                           src={imageUrls[index] || "/placeholder.svg"}
+                          width={1000}
+                          height={1000}
                           alt={`Farm image ${index + 1}`}
                           className="h-full w-full object-cover rounded-md"
                           width={0}

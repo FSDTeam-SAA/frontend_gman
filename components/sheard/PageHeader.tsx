@@ -5,7 +5,7 @@ interface PageHeaderProps {
 }
 export default function PageHeader({ titile, subtitle, imge}: PageHeaderProps) {
   return (
-    <section className="relative w-full min-h-[400px] md:min-h-[500px] lg:min-h-[590px] flex items-center justify-center overflow-hidden">
+    <section className="relative w-full h-[400px] md:h-[500px] lg:h-[590px] flex items-center justify-center overflow-hidden">
       {/* Background Image */}
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"

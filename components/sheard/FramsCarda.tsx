@@ -1,6 +1,7 @@
 import type React from "react"
 import { MapPin, MessageCircle, Star } from "lucide-react"
 import Image from "next/image"
+import Link from "next/link"
 
 interface FarmsCardProps {
   id: number
@@ -73,12 +74,12 @@ const FarmsCard: React.FC<FarmsCardProps> = ({ id, name, location, image, profil
 
           {/* View Button */}
           <div className="mt-2 sm:mt-2.5 md:mt-3">
-            <a
+            <Link
               href={`/farms/${id}`}
               className="text-sm sm:text-base md:text-lg lg:text-base text-[#039B06] font-medium flex items-center hover:text-[#027A04] transition-colors"
             >
               View Farms →
-            </a>
+            </Link>
           </div>
         </div>
       </div>
