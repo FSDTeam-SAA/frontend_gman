@@ -3,17 +3,23 @@
 import Link from "next/link"
 import Image from "next/image"
 import { Facebook, Instagram, Twitter } from "lucide-react"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
+import { useSession } from "next-auth/react"
 
 export function Footer() {
   const pathname = usePathname()
+  const router = useRouter()
+  const { data: session, status } = useSession()
+
+  const isLoggedIn = status === "authenticated"
+  const userRole = session?.user?.role || null
 
   const quickLinks = [
     { name: "About Us", href: "/about" },
     { name: "Mission", href: "/mission" },
     { name: "Become a Seller", href: "/become-seller" },
     { name: "Blog", href: "/blog" },
-  ]
+  ].filter(link => link.href !== "/become-seller" || !isLoggedIn || (isLoggedIn && userRole !== "seller"))
 
   const customerServiceLinks = [
     { name: "FAQs", href: "/faq" },
@@ -29,9 +35,18 @@ export function Footer() {
     return pathname.startsWith(href)
   }
 
+  const handleBecomeSellerClick = (e: React.MouseEvent, href: string) => {
+    e.preventDefault()
+    if (!isLoggedIn) {
+      router.push("/login")
+      return
+    }
+    router.push(href)
+  }
+
   return (
     <footer className="border-t bg-background">
-      <div className="container mx-auto py-8 md:py-12">
+      <div className="container mx-auto pb-4 pt-8 md:pb-6 md:pt-12 px-4 md:px-0">
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
           <div className="flex flex-col gap-2">
             <Link href="/" className="flex items-center gap-2">
@@ -41,13 +56,13 @@ export function Footer() {
                 height={53}
                 alt="Table Fresh Logo"
                 className="h-[53px] w-[40px]"
+                priority
               />
               <div className="flex flex-col">
                 <div className="">
                   <p className="text-[16px] font-semibold text-black">TABLE</p>
                   <p className="text-[16px] font-normal text-[#039B06]">FRESH</p>
                 </div>
-
                 <span className="text-[6px] font-medium leading-[120%] space-x-[5%] text-[#8F8F8F]">
                   Fresh & Healthy
                 </span>
@@ -78,10 +93,11 @@ export function Footer() {
                 <li key={link.name}>
                   <Link
                     href={link.href}
+                    onClick={(e) => link.href === "/become-seller" ? handleBecomeSellerClick(e, link.href) : null}
                     className={`transition-colors relative ${
                       isActive(link.href)
-                        ? "text-[#039B06] font-semibold after:content-[''] after:absolute after:left-0 after:bottom-[-2px] after:w-full after:h-[1px] after:bg-[#039B06]"
-                        : "text-[#272727] hover:text-[#039B06] hover:font-semibold after:content-[''] after:absolute after:left-1/2 after:bottom-[-2px] after:w-0 after:h-[1px] after:bg-[#039B06] hover:after:w-full hover:after:left-0"
+                        ? "text-[#039B06] font-semibold"
+                        : "text-[#272727] hover:text-[#039B06] hover:font-semibold"
                     }`}
                   >
                     {link.name}
@@ -99,8 +115,8 @@ export function Footer() {
                     href={link.href}
                     className={`transition-colors relative ${
                       isActive(link.href)
-                        ? "text-[#039B06] font-semibold after:content-[''] after:absolute after:left-0 after:bottom-[-2px] after:w-full after:h-[1px] after:bg-[#039B06]"
-                        : "text-[#272727] hover:text-[#039B06] hover:font-semibold after:content-[''] after:absolute after:left-1/2 after:bottom-[-2px] after:w-0 after:h-[1px] after:bg-[#039B06] hover:after:w-full hover:after:left-0"
+                        ? "text-[#039B06] font-semibold"
+                        : "text-[#272727] hover:text-[#039B06] hover:font-semibold"
                     }`}
                   >
                     {link.name}
@@ -130,7 +146,7 @@ export function Footer() {
           </div>
         </div>
         <div className="mt-8 border-t pt-6 text-center text-sm text-[#272727]">
-          © 2025 TABLE FRESH. All rights reserved.
+          © {new Date().getFullYear()} TABLE FRESH. All rights reserved.
         </div>
       </div>
     </footer>

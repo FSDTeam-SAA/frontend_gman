@@ -1,12 +1,11 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
-import { Heart, Menu, MessageCircle, ShoppingCart, X } from "lucide-react"
+import { CircleUser, Heart, Menu, MessageCircle, ShoppingCart, X } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,43 +15,17 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { LogOut, ShoppingBag, User } from "lucide-react"
 import { usePathname, useRouter } from "next/navigation"
-import { clearAuthCookies } from "@/lib/auth"
 import { toast } from "sonner"
+import { signOut, useSession } from "next-auth/react"
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
-  const [userRole, setUserRole] = useState<string | null>(null)
-  const [userName, setUserName] = useState<string>("")
-
-  const pathname = usePathname()
+  const { data: session, status } = useSession()
   const router = useRouter()
+  const pathname = usePathname()
 
-  // Check authentication status on component mount
-  useEffect(() => {
-    const checkAuthStatus = () => {
-      const accessToken = document.cookie
-        .split("; ")
-        .find((row) => row.startsWith("accessToken="))
-        ?.split("=")[1]
-
-      const role = document.cookie
-        .split("; ")
-        .find((row) => row.startsWith("userRole="))
-        ?.split("=")[1]
-
-      setIsLoggedIn(!!accessToken)
-      setUserRole(role || null)
-
-      // You can decode the JWT token to get user name if needed
-      // For now, we'll use a placeholder
-      if (accessToken) {
-        setUserName("User") // You can decode JWT or fetch user data here
-      }
-    }
-
-    checkAuthStatus()
-  }, [])
+  const isLoggedIn = status === "authenticated"
+  const userRole = session?.user?.role || null
 
   const navLinks = [
     { name: "Home", href: "/" },
@@ -62,104 +35,81 @@ export function Navbar() {
     { name: "Blog", href: "/blog" },
     { name: "FAQ", href: "/faq" },
     { name: "Contact", href: "/contact" },
-  ]
+  ].filter(link => link.href !== "/become-seller" || !isLoggedIn || (isLoggedIn && userRole !== "seller"))
 
   const isActive = (href: string) => {
-    if (href === "/") {
-      return pathname === "/"
-    }
+    if (href === "/") return pathname === "/"
     return pathname.startsWith(href)
   }
 
-  const handleLogout = () => {
-    clearAuthCookies()
-    setIsLoggedIn(false)
-    setUserRole(null)
-    setUserName("")
+  const handleLogout = async () => {
+    await signOut({ redirect: false })
     toast.success("Logged out successfully!")
     router.push("/")
+  }
+
+  const handleBecomeSellerClick = (href: string) => {
+    if (!isLoggedIn) {
+      router.push("/login")
+      return
+    }
+    router.push(href)
   }
 
   const getProfileLink = () => {
     switch (userRole) {
       case "admin":
-        return "/dashboard"
       case "seller":
         return "/dashboard"
-      case "user":
-        return "/buyer-profile"
       default:
         return "/buyer-profile"
     }
   }
 
   const getOrderHistoryLink = () => {
-    switch (userRole) {
-      case "admin":
-        return "/dashboard"
-      case "seller":
-        return "/dashboard"
-      case "user":
-        return "/buyer-order-history"
-      default:
-        return "/buyer-order-history"
-    }
-  }
-
-  const getUserInitials = () => {
-    return (
-      userName
-        .split(" ")
-        .map((name) => name.charAt(0))
-        .join("")
-        .toUpperCase()
-        .slice(0, 2) || "U"
-    )
+    return userRole === "user" ? "/buyer-order-history" : "/dashboard"
   }
 
   return (
     <header className="sticky top-0 z-50 border-b bg-background">
-      <div className="container mx-auto flex h-[90px] items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-            {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-            <span className="sr-only">Toggle menu</span>
-          </Button>
-          <Link href="/" className="flex items-center gap-2">
-            <Image
-              src="/asset/logo.png"
-              width={40}
-              height={53}
-              alt="Table Fresh Logo"
-              className="h-[53px] w-[40px]"
-            />
-            <div className="flex flex-col">
-              <div className="">
-                <p className="text-[16px] font-semibold text-black">TABLE</p>
-                <p className="text-[16px] font-normal text-[#039B06]">FRESH</p>
-              </div>
-              <span className="text-[6px] font-medium leading-[120%] space-x-[5%] text-[#8F8F8F]">Fresh & Healthy</span>
+      <div className="container mx-auto flex h-[90px] items-center justify-between px-2 lg:px-0">
+        {/* Logo - Always visible */}
+        <Link href="/" className="flex items-center gap-2">
+          <Image
+            src="/asset/logo.png"
+            width={40}
+            height={53}
+            alt="Table Fresh Logo"
+            className="h-[53px] w-[40px]"
+            priority
+          />
+          <div className="flex flex-col">
+            <div className="">
+              <p className="text-[16px] font-semibold text-black">TABLE</p>
+              <p className="text-[16px] font-normal text-[#039B06]">FRESH</p>
             </div>
-          </Link>
-        </div>
+            <span className="text-[6px] font-medium leading-[120%] space-x-[5%] text-[#8F8F8F]">Fresh & Healthy</span>
+          </div>
+        </Link>
 
-        <nav
-          className={cn(
-            "absolute left-0 right-0 top-16 z-50 bg-background p-4 shadow-lg md:static md:p-0 md:shadow-none",
-            isMenuOpen ? "flex" : "hidden md:flex",
-          )}
-        >
-          <ul className="flex w-full flex-col items-start gap-2 md:flex-row md:items-center md:gap-6">
+        {/* Desktop Navigation - Hidden on sm/md */}
+        <nav className="hidden lg:flex" aria-label="Main navigation">
+          <ul className="flex items-center gap-6">
             {navLinks.map((link) => (
               <li key={link.name}>
                 <Link
                   href={link.href}
+                  onClick={(e) => {
+                    if (link.href === "/become-seller") {
+                      e.preventDefault()
+                      handleBecomeSellerClick(link.href)
+                    }
+                  }}
                   className={`text-base font-medium transition-colors relative ${
                     isActive(link.href)
-                      ? "text-[#039B06] font-semibold after:content-[''] after:absolute after:left-0 after:bottom-[-5px] after:w-full after:h-[2px] after:bg-[#039B06]"
-                      : "text-[#272727] after:content-[''] after:absolute after:left-1/2 after:bottom-[-5px] after:w-0 after:h-[2px] after:bg-[#039B06] hover:after:w-full hover:after:left-0 hover:text-[#039B06] hover:font-semibold"
+                      ? "text-[#039B06] font-semibold"
+                      : "text-[#272727] hover:text-[#039B06] hover:font-semibold"
                   }`}
-                  onClick={() => setIsMenuOpen(false)}
                 >
                   {link.name}
                 </Link>
@@ -168,60 +118,226 @@ export function Navbar() {
           </ul>
         </nav>
 
-        <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" className="hidden md:flex">
-            <MessageCircle className="h-5 w-5" />
-            <span className="sr-only">Messages</span>
-          </Button>
-          <Link href="/cart">
-            <Button variant="ghost" size="icon">
-              <ShoppingCart className="h-5 w-5" />
-              <span className="sr-only">Cart</span>
-            </Button>
-          </Link>
-          {isLoggedIn ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Avatar className="h-8 w-8 border border-[#039B06] cursor-pointer">
-                  <AvatarImage src="/placeholder.svg?height=32&width=32" alt="User" />
-                  <AvatarFallback>{getUserInitials()}</AvatarFallback>
-                </Avatar>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuItem asChild>
-                  <Link href={getProfileLink()} className="w-full cursor-pointer">
-                    <User className="mr-2 h-4 w-4" />
-                    {userRole === "admin" || userRole === "seller" ? "Dashboard" : "Profile"}
-                  </Link>
-                </DropdownMenuItem>
-                {userRole === "user" && (
+        {/* Right side actions */}
+        <div className="flex items-center gap-4">
+          {/* Desktop user actions - Hidden on sm/md */}
+          <div className="hidden lg:flex items-center gap-6">
+            {isLoggedIn && userRole === "user" && (
+              <>
+                <Link href="/messages" className="flex" aria-label="Messages">
+                  <MessageCircle className="h-6 w-6 hover:text-[#039B06]" />
+                </Link>
+                <Link href="/cart" aria-label="Shopping cart">
+                  <ShoppingCart className="h-6 w-6 hover:text-[#039B06]" />
+                </Link>
+              </>
+            )}
+            {isLoggedIn ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="rounded-full focus:outline-none focus:ring-0 focus:ring-offset-0">
+                    <CircleUser className="h-8 w-8 text-[#039B06]" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
                   <DropdownMenuItem asChild>
-                    <Link href={getOrderHistoryLink()} className="w-full cursor-pointer">
-                      <ShoppingBag className="mr-2 h-4 w-4" />
-                      Order history
+                    <Link href={getProfileLink()} className="w-full cursor-pointer hover:text-[#039B06]">
+                      <User className="mr-2 h-4 w-4 text-[#039B06]" />
+                      {userRole === "admin" || userRole === "seller" ? "Dashboard" : "Profile"}
                     </Link>
                   </DropdownMenuItem>
-                )}
-                <DropdownMenuSeparator />
-                <DropdownMenuItem className="cursor-pointer" onClick={handleLogout}>
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Log out
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          ) : (
-            <Link href="/sign-up">
-              <Button variant="default" className="bg-green-800 hover:bg-green-900">
-                Sign Up
-              </Button>
-            </Link>
-          )}
-          <Button variant="outline" size="sm" className="hidden md:flex text-white bg-[#039B06]">
-            <Heart className="mr-2 h-4 w-4" />
-            Donate
+                  {userRole === "user" && (
+                    <DropdownMenuItem asChild>
+                      <Link href={getOrderHistoryLink()} className="w-full cursor-pointer hover:text-[#039B06]">
+                        <ShoppingBag className="mr-2 h-4 w-4 text-[#039B06]" />
+                        Order history
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    className="cursor-pointer focus:bg-red-50 focus:text-red-500 hover:text-red-500"
+                    onClick={handleLogout}
+                  >
+                    <LogOut className="mr-2 h-4 w-4 text-red-600" />
+                    Log out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Link href="/sign-up">
+                <Button variant="default" className="bg-[#014A14] hover:bg-[#039B06] text-white cursor-pointer">
+                  Sign Up
+                </Button>
+              </Link>
+            )}
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-[40px] text-white bg-[#039B06] hover:bg-[#028a05] hover:text-white cursor-pointer"
+              onClick={() => router.push("/donate")}
+            >
+              <Heart className="mr-2 h-4 w-4" />
+              Donate
+            </Button>
+          </div>
+
+          {/* Mobile Menu Button - Visible on sm/md only */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="lg:hidden"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-label="Toggle menu"
+            aria-expanded={isMenuOpen}
+          >
+            {isMenuOpen ? <X className="w-[30px] h-[30px]" /> : <Menu className="!w-[30px] !h-[30px]" />}
           </Button>
         </div>
       </div>
+
+      {/* Mobile Menu Overlay */}
+      {isMenuOpen && <div className="fixed inset-0 z-40 bg-black/50 lg:hidden" onClick={() => setIsMenuOpen(false)} />}
+
+      {/* Mobile Menu Content */}
+      <nav
+        className={cn(
+          "absolute left-0 right-0 top-0 z-50 bg-background shadow-lg transition-all duration-300 lg:hidden",
+          isMenuOpen ? "flex translate-y-0 opacity-100" : "hidden -translate-y-2 opacity-0",
+        )}
+        aria-label="Mobile navigation"
+      >
+        <div className="w-full">
+          {/* Mobile Menu Header */}
+          <div className="flex items-center justify-between p-4 border-b">
+            <Link href="/" className="flex items-center gap-2" onClick={() => setIsMenuOpen(false)}>
+              <Image
+                src="/asset/logo.png"
+                width={40}
+                height={53}
+                alt="Table Fresh Logo"
+                className="h-[53px] w-[40px]"
+                priority
+              />
+              <div className="flex flex-col">
+                <div className="">
+                  <p className="text-[16px] font-semibold text-black">TABLE</p>
+                  <p className="text-[16px] font-normal text-[#039B06]">FRESH</p>
+                </div>
+                <span className="text-[6px] font-medium leading-[120%] space-x-[5%] text-[#8F8F8F]">
+                  Fresh & Healthy
+                </span>
+              </div>
+            </Link>
+            <Button variant="ghost" size="icon" onClick={() => setIsMenuOpen(false)} aria-label="Close menu">
+              <X className="!w-[30px] !h-[30px]" />
+            </Button>
+          </div>
+
+          {/* Mobile Menu Content */}
+          <div className="p-6">
+            {/* Navigation Links */}
+            <ul className="flex flex-col gap-4 mb-6">
+              {navLinks.map((link) => (
+                <li key={link.name}>
+                  <Link
+                    href={link.href}
+                    onClick={(e) => {
+                      if (link.href === "/become-seller") {
+                        e.preventDefault()
+                        handleBecomeSellerClick(link.href)
+                        setIsMenuOpen(false)
+                      } else {
+                        setIsMenuOpen(false)
+                      }
+                    }}
+                    className={`block text-lg font-medium transition-colors py-2 ${
+                      isActive(link.href)
+                        ? "text-[#039B06] font-semibold"
+                        : "text-[#272727] hover:text-[#039B06] hover:font-semibold"
+                    }`}
+                  >
+                    {link.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+
+            {/* Mobile User Actions */}
+            <div className="border-t pt-4">
+              {isLoggedIn ? (
+                <div className="space-y-4">
+                  {userRole === "user" && (
+                    <div className="flex gap-4 mb-4">
+                      <Link
+                        href="/messages"
+                        className="flex items-center gap-2 text-[#272727] hover:text-[#039B06]"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        <MessageCircle className="h-5 w-5" />
+                        Messages
+                      </Link>
+                      <Link
+                        href="/cart"
+                        className="flex items-center gap-2 text-[#272727] hover:text-[#039B06]"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        <ShoppingCart className="h-5 w-5" />
+                        Cart
+                      </Link>
+                    </div>
+                  )}
+                  <Link
+                    href={getProfileLink()}
+                    className="flex items-center gap-2 text-[#272727] hover:text-[#039B06] py-2"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <User className="h-5 w-5" />
+                    {userRole === "admin" || userRole === "seller" ? "Dashboard" : "Profile"}
+                  </Link>
+                  {userRole === "user" && (
+                    <Link
+                      href={getOrderHistoryLink()}
+                      className="flex items-center gap-2 text-[#272727] hover:text-[#039B06] py-2"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      <ShoppingBag className="h-5 w-5" />
+                      Order History
+                    </Link>
+                  )}
+                  <button
+                    className="flex items-center gap-2 text-red-600 hover:text-red-700 py-2"
+                    onClick={() => {
+                      handleLogout()
+                      setIsMenuOpen(false)
+                    }}
+                  >
+                    <LogOut className="h-5 w-5" />
+                    Log out
+                  </button>
+                </div>
+              ) : (
+                <Link href="/sign-up" onClick={() => setIsMenuOpen(false)}>
+                  <Button variant="default" className="w-full bg-[#014A14] hover:bg-[#039B06] text-white mb-4">
+                    Sign Up
+                  </Button>
+                </Link>
+              )}
+              <Button
+                variant="outline"
+                className="w-full text-white bg-[#039B06] hover:bg-[#028a05] hover:text-white"
+                onClick={() => {
+                  router.push("/donate")
+                  setIsMenuOpen(false)
+                }}
+              >
+                <Heart className="mr-2 h-4 w-4" />
+                Donate
+              </Button>
+            </div>
+          </div>
+        </div>
+      </nav>
     </header>
   )
 }

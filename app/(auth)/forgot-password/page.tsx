@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
@@ -9,7 +8,6 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Mail } from "lucide-react"
-import { authApi } from "@/lib/auth"
 import { toast } from "sonner"
 import Image from "next/image"
 
@@ -20,19 +18,34 @@ export default function ForgotPasswordPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    if (!email) {
+      toast.error("Please enter your email")
+      return
+    }
+
     setIsLoading(true)
 
     try {
-      const response = await authApi.forgotPassword(email)
+      const response = await fetch("https://gman54-backend.onrender.com/api/v1/auth/forget", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      })
 
-      if (response.success) {
+      const data = await response.json()
+
+      if (response.ok) {
         toast.success("OTP sent to your email!")
         router.push(`/verify-otp?email=${encodeURIComponent(email)}&type=reset`)
       } else {
-        toast.error(response.message || "Failed to send OTP")
+        toast.error(data.message || "Failed to send OTP")
       }
-    } catch {
-      toast.error("An error occurred")
+    } catch (error) {
+      console.error("Error sending OTP:", error)
+      toast.error("An error occurred while sending OTP")
     } finally {
       setIsLoading(false)
     }
@@ -52,34 +65,34 @@ export default function ForgotPasswordPage() {
         </div>
 
         <div className="container relative z-10 flex flex-col justify-center items-center p-12 text-white">
-                  <div className="mb-8 backdrop-blur-[50px] bg-white/23 shadow-[0px_4px_4px_0px_rgba(93,93,93,0.25)] p-5 rounded-[16px]">
-                    <div className="flex items-start gap-2">
-                      <Image
-                        src="/asset/logo.png"
-                        width={40}
-                        height={53}
-                        alt="Table Fresh Logo"
-                        className="h-[53px] w-[40px]"
-                      />
-                      <div className="flex flex-col">
-                        <div className="">
-                          <p className="text-[16px] font-semibold text-black">TABLE</p>
-                          <p className="text-[16px] font-normal text-[#039B06]">
-                            FRESH
-                          </p>
-                        </div>
-                        <span className="text-[6px] font-medium leading-[120%] text-[#8F8F8F]">
-                          Fresh & Healthy
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-        
-                  <h1 className="text-4xl font-bold mb-4">Welcome to Our Site Name</h1>
-                  <p className="text-lg opacity-90">
-                    Discover fresh, local produce from farms around the world
+          <div className="mb-8 backdrop-blur-[50px] bg-white/23 shadow-[0px_4px_4px_0px_rgba(93,93,93,0.25)] p-5 rounded-[16px]">
+            <div className="flex items-start gap-2">
+              <Image
+                src="/asset/logo.png"
+                width={40}
+                height={53}
+                alt="Table Fresh Logo"
+                className="h-[53px] w-[40px]"
+              />
+              <div className="flex flex-col">
+                <div className="">
+                  <p className="text-[16px] font-semibold text-black">TABLE</p>
+                  <p className="text-[16px] font-normal text-[#039B06]">
+                    FRESH
                   </p>
                 </div>
+                <span className="text-[6px] font-medium leading-[120%] text-[#8F8F8F]">
+                  Fresh & Healthy
+                </span>
+              </div>
+            </div>
+          </div>
+        
+          <h1 className="text-4xl font-bold mb-4">Welcome to Our Site Name</h1>
+          <p className="text-lg opacity-90">
+            Discover fresh, local produce from farms around the world
+          </p>
+        </div>
       </div>
 
       {/* Right side - Reset Form */}

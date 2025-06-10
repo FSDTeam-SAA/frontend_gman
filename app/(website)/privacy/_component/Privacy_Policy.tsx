@@ -1,11 +1,9 @@
-import { Card, CardContent } from "@/components/ui/card"
+
 
 export default function PrivacyPolicy() {
   return (
-    <div className=" py-8 px-4 sm:px-6 lg:px-8">
-      <div className=" container mx-auto">
-        <Card className="border-none shadow-none">
-          <CardContent className="p-6 sm:p-8 lg:p-12">
+    <div className=" py-16 px-4 sm:px-6 lg:px-8">
+      <div className="container mx-auto">
             <div className="prose prose-gray max-w-none">
               <h1 className="text-3xl sm:text-[32px] font-semibold text-[#131313] mb-8">Privacy Policy</h1>
 
@@ -188,7 +186,7 @@ export default function PrivacyPolicy() {
                 </section>
 
                 <section>
-                  <h2 className="text-2xl font-semibold text-gray-900 mb-4">Children's Privacy</h2>
+                  <h2 className="text-2xl font-semibold text-gray-900 mb-4">Children&apos;s Privacy</h2>
                   <p className="text-[#131313]">
                     Our Site is not intended for children under the age of 13, and we do not knowingly collect personal
                     information from children. If we become aware that we have inadvertently collected personal
@@ -200,14 +198,12 @@ export default function PrivacyPolicy() {
                   <h2 className="text-2xl font-semibold text-gray-900 mb-4">Changes to This Privacy Policy</h2>
                   <p className="text-[#131313]">
                     We may update this Privacy Policy from time to time. Any changes will be posted on this page, and
-                    the "Effective Date" at the top will be updated. We encourage you to review this policy periodically
+                    the &#34;Effective Date&#34; at the top will be updated. We encourage you to review this policy periodically
                     to stay informed about how we protect your information.
                   </p>
                 </section>
               </div>
             </div>
-          </CardContent>
-        </Card>
       </div>
     </div>
   )

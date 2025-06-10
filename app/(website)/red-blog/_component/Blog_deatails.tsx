@@ -117,7 +117,7 @@ export default function BlogDetails() {
                 <strong>Lorem ipsum dolor sit amet, consectetur.</strong>
                 <p className="mt-1 sm:mt-2">
                   Financial law establishes the rules governing markets, institutions, and transactions. When future
-                  lawyers, policymakers, or business leaders understand these regulations, they're better equipped to
+                  lawyers, policymakers, or business leaders understand these regulations, they&apos;re better equipped to
                   prevent systemic failures—such as banking crises or securities collapses—by spotting weak spots in
                   compliance frameworks and advising on sound risk-management practices.
                 </p>

@@ -143,7 +143,7 @@ const products = [
   },
 ]
 
-export default function page() {
+export default function Page() {
   const [favorites, setFavorites] = useState<number[]>([])
 
   const toggleFavorite = (productId: number) => {

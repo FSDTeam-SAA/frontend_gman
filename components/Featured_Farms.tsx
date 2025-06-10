@@ -1,48 +1,82 @@
-"use client"
-import { useQuery } from "@tanstack/react-query"
-import FarmsCard from "./sheard/FramsCarda"
+"use client";
 
- interface Farm {
-  _id: string
-  status: "approved" | "pending" | "rejected"
-  name: string
-  description: string
-  images:[]
-  videos: any[] // Update this if you have a specific structure for videos
-  seller: string
-  code: string
-  location?: string
-  review:[]
-  rating?: number // Added since it's used in FarmsCard
-  profileImage?: string // Added since it's used in FarmsCard
-  createdAt: string
-  updatedAt: string
-  __v?: number
+import { useQuery } from "@tanstack/react-query"; // Fixed typo in path ("sheard/FramsCarda" → "shared/FarmsCard")
+import FarmsCard from "./sheard/FramsCarda";
+
+interface Location {
+  street: string;
+  city: string;
+  state: string;
+  zipCode: string;
 }
 
+interface Image {
+  public_id: string;
+  url: string;
+  _id: string;
+}
+
+interface Seller {
+  avatar: {
+    public_id: string;
+    url: string;
+  };
+  _id: string;
+}
+
+interface Farm {
+  _id: string;
+  status: "approved" | "pending" | "rejected";
+  name: string;
+  description: string;
+  isOrganic?: boolean;
+  images: Image[];
+  seller: Seller | null;
+  code: string;
+  location?: Location;
+  rating?: number;
+  profileImage?: string;
+  createdAt: string;
+  updatedAt: string;
+  __v?: number;
+}
+
+interface ApiResponse {
+  success: boolean;
+  message: string;
+  data: Farm[];
+}
 
 const Featured_Farms = () => {
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error } = useQuery<ApiResponse>({
     queryKey: ["farms"],
     queryFn: async () => {
-      try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/all-farm`)
-        if (!response.ok) {
-          throw new Error("Failed to fetch farms")
-        }
-        return await response.json()
-      } catch (err) {
-        console.error("Error fetching farms:", err)
-        // Return empty data instead of throwing to prevent rendering errors
-        return { data: [] }
+      if (!process.env.NEXT_PUBLIC_API_URL) {
+        throw new Error("API URL is not defined");
       }
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/user/all-farm`
+      );
+      if (!response.ok) {
+        throw new Error(`Failed to fetch farms: ${response.statusText}`);
+      }
+      const result = await response.json();
+      if (!result.success) {
+        throw new Error(result.message || "API returned unsuccessful response");
+      }
+      if (!Array.isArray(result.data)) {
+        throw new Error("Invalid API response format: data is not an array");
+      }
+      return result;
     },
-  })
+  });
 
   if (isLoading) {
     return (
-      <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 mt-[100px]">
-        <h2 className="text-3xl text-[#272727] font-semibold mb-8">Featured Farms</h2>
+      <section className="container mx-auto px-4 md:px-0 py-12 mt-[100px]">
+        <h2 className="text-3xl text-[#272727] font-semibold mb-8">
+          Featured Farms
+        </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {[...Array(4)].map((_, index) => (
             <div key={index} className="animate-pulse">
@@ -62,51 +96,68 @@ const Featured_Farms = () => {
           ))}
         </div>
       </section>
-    )
+    );
   }
 
   if (error) {
     return (
-      <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 mt-[100px]">
-        <h2 className="text-3xl text-[#272727] font-semibold mb-8">Featured Farms</h2>
+      <section className="container mx-auto px-4 md:px-0 py-12 mt-[100px]">
+        <h2 className="text-3xl text-[#272727] font-semibold mb-8">
+          Featured Farms
+        </h2>
         <div className="text-center py-12">
-          <p className="text-red-600 text-lg">Error loading farms. Please try again later.</p>
+          <p className="text-red-600 text-lg">
+            {error instanceof Error
+              ? error.message
+              : "Error loading farms. Please try again later."}
+          </p>
         </div>
       </section>
-    )
+    );
   }
 
   return (
-    <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 mt-[100px]">
+    <section className="container mx-auto px-4 md:px-0 py-12 mt-[40px] md:mt-[100px]">
       <div>
-        <h2 className="text-3xl text-[#272727] font-semibold mb-8">Featured Farms</h2>
+        <h2 className="text-3xl text-[#272727] font-semibold mb-8">
+          Featured Farms
+        </h2>
 
         {/* Grid layout for farm cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {data?.data?.length > 0 ? (
-            data.data.map((farm: any, index: number) => (
+          {data && data.data && data.data.length > 0 ? (
+            data.data.map((farm: Farm) => (
               <FarmsCard
-                key={farm.id || `farm-${index}`}
-                id={farm.id}
+                key={farm._id}
+                id={farm._id}
                 name={farm.name || "Farm Name"}
                 location={farm.location?.city || "Unknown city"}
                 street={farm.location?.street || "Unknown street"}
                 state={farm.location?.state || "Unknown state"}
-                image={farm.images?.[0]?.url || "/placeholder.svg?height=260&width=320"}
-                profileImage={farm.profileImage || "/placeholder.svg?height=260&width=320"}
+                image={
+                  farm.images?.[0]?.url ||
+                  "/placeholder.svg?height=260&width=320"
+                }
+                profileImage={
+                  farm.seller?.avatar?.url ||
+                  farm.profileImage ||
+                  "/placeholder.svg?height=260&width=320"
+                }
                 description={farm.description || "No description available"}
                 rating={farm.rating || 0}
               />
             ))
           ) : (
             <div className="col-span-full text-center py-12">
-              <p className="text-gray-600 text-lg">No farms available at the moment.</p>
+              <p className="text-gray-600 text-lg">
+                No farms available at the moment.
+              </p>
             </div>
           )}
         </div>
       </div>
     </section>
-  )
-}
+  );
+};
 
-export default Featured_Farms
+export default Featured_Farms;

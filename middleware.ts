@@ -1,49 +1,43 @@
-import { NextResponse } from "next/server"
-import type { NextRequest } from "next/server"
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import { getToken } from "next-auth/jwt";
 
-export function middleware(request: NextRequest) {
-  const token = request.cookies.get("accessToken")?.value
-  const refreshToken = request.cookies.get("refreshToken")?.value
-  const userRole = request.cookies.get("userRole")?.value
+export async function middleware(request: NextRequest) {
+    const { pathname } = request.nextUrl;
 
-  // Protected routes
-  const protectedRoutes = ["/dashboard"]
-  const authRoutes = ["/login", "/register", "/forgot-password"]
+    const token = await getToken({
+        req: request,
+        secret: process.env.NEXTAUTH_SECRET,
+    });
 
-  const isProtectedRoute = protectedRoutes.some((route) => request.nextUrl.pathname.startsWith(route))
-  const isAuthRoute = authRoutes.some((route) => request.nextUrl.pathname.startsWith(route))
+    const publicRoutes = ["/login","/forgot-password","/update-password","/verify-otp"];
 
-  // Redirect to login if accessing protected route without token
-  if (isProtectedRoute && !token && !refreshToken) {
-    return NextResponse.redirect(new URL("/login", request.url))
-  }
+    const isPublicRoute = publicRoutes.some((route) =>
+        pathname.startsWith(route)
+    );
 
-  // Redirect authenticated users away from auth pages
-  if (isAuthRoute && token) {
-    if (userRole === "admin") {
-      return NextResponse.redirect(new URL("/dashboard", request.url))
-    
+    const isStatic = pathname.startsWith("/_next") || pathname.includes(".");
 
-    } else {
-      return NextResponse.redirect(new URL("/dashboard", request.url))
+    // Redirect unauthenticated users trying to access protected routes
+    // if (!token && !isPublicRoute && !isStatic) {
+    //     return NextResponse.redirect(new URL("/login", request.url));
+    // }
+
+    // Redirect authenticated users away from public routes
+    if (token && isPublicRoute) {
+        return NextResponse.redirect(new URL("/", request.url));
     }
-  }
 
-  // Role-based route protection
-  if (request.nextUrl.pathname.startsWith("/dashboard") && userRole !== "admin") {
-    return NextResponse.redirect(new URL("/dashboard", request.url))
-  }
+    // Restrict /dashboard to admin only
+    if (pathname.startsWith("/dashboard")) {
+        if (!token || token.role !== "seller") {
+            return NextResponse.redirect(new URL("/", request.url)); // Or use a /403 page
+        }
+    }
 
-
-
-  return NextResponse.next()
+    return NextResponse.next();
 }
 
 export const config = {
-  matcher: [
-    "/dashboard/:path*",
-    "/login",
-    "/register",
-    "/forgot-password",
-  ],
-}
+    matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+};
