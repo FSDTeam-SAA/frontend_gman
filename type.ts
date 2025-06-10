@@ -1,20 +1,32 @@
-export interface User {
-  _id: string
-  name: string
-  email: string
-  username: string
-  role: "user" | "seller" | "admin"
-  avatar: {
-    public_id: string
-    url: string
+// types/next-auth.d.ts
+import NextAuth from "next-auth";
+
+declare module "next-auth" {
+  interface Session {
+    user: {
+      id: string;
+      role: string;
+      farm: string;
+    };
+    accessToken: string;
+    refreshToken: string;
   }
-  address: {
-    street: string
-    city: string
-    state: string
-    zipCode: string
+
+  interface User {
+    id: string;
+    role: string;
+    farm: string;
+    accessToken: string;
+    refreshToken: string;
   }
-  verificationInfo: {
-    verified: boolean
+}
+
+declare module "next-auth/jwt" {
+  interface JWT {
+    id: string;
+    role: string;
+    farm: string;
+    accessToken: string;
+    refreshToken: string;
   }
 }

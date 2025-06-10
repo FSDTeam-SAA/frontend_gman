@@ -45,7 +45,6 @@ export default function SellerPage() {
       router.push("/sign-up")
     }
   }, [router])
-  const searchParams = useSearchParams()
   // const token = searchParams.get("token") || ""
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {

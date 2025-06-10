@@ -16,43 +16,18 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { LogOut, ShoppingBag, User } from "lucide-react"
 import { usePathname, useRouter } from "next/navigation"
-import { clearAuthCookies } from "@/lib/auth"
 import { toast } from "sonner"
+import { signOut, useSession } from "next-auth/react"
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
-  const [userRole, setUserRole] = useState<string | null>(null)
-  const [userName, setUserName] = useState<string>("")
-
-  const pathname = usePathname()
+  const { data: session, status } = useSession()
   const router = useRouter()
+  const pathname = usePathname()
 
-  // Check authentication status on component mount
-  useEffect(() => {
-    const checkAuthStatus = () => {
-      const accessToken = document.cookie
-        .split("; ")
-        .find((row) => row.startsWith("accessToken="))
-        ?.split("=")[1]
-
-      const role = document.cookie
-        .split("; ")
-        .find((row) => row.startsWith("userRole="))
-        ?.split("=")[1]
-
-      setIsLoggedIn(!!accessToken)
-      setUserRole(role || null)
-
-      // You can decode the JWT token to get user name if needed
-      // For now, we'll use a placeholder
-      if (accessToken) {
-        setUserName("User") // You can decode JWT or fetch user data here
-      }
-    }
-
-    checkAuthStatus()
-  }, [])
+  const isLoggedIn = status === "authenticated"
+  const userRole = session?.user?.role || null
+  const userName = session?.user?.name || ""
 
   const navLinks = [
     { name: "Home", href: "/" },
@@ -65,17 +40,12 @@ export function Navbar() {
   ]
 
   const isActive = (href: string) => {
-    if (href === "/") {
-      return pathname === "/"
-    }
+    if (href === "/") return pathname === "/"
     return pathname.startsWith(href)
   }
 
-  const handleLogout = () => {
-    clearAuthCookies()
-    setIsLoggedIn(false)
-    setUserRole(null)
-    setUserName("")
+  const handleLogout = async () => {
+    await signOut({ redirect: false })
     toast.success("Logged out successfully!")
     router.push("/")
   }
@@ -83,27 +53,15 @@ export function Navbar() {
   const getProfileLink = () => {
     switch (userRole) {
       case "admin":
-        return "/dashboard"
       case "seller":
         return "/dashboard"
-      case "user":
-        return "/buyer-profile"
       default:
         return "/buyer-profile"
     }
   }
 
   const getOrderHistoryLink = () => {
-    switch (userRole) {
-      case "admin":
-        return "/dashboard"
-      case "seller":
-        return "/dashboard"
-      case "user":
-        return "/buyer-order-history"
-      default:
-        return "/buyer-order-history"
-    }
+    return userRole === "user" ? "/buyer-order-history" : "/dashboard"
   }
 
   const getUserInitials = () => {
@@ -121,9 +79,15 @@ export function Navbar() {
     <header className="sticky top-0 z-50 border-b bg-background">
       <div className="container mx-auto flex h-[90px] items-center justify-between">
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="md:hidden" 
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-label="Toggle menu"
+            aria-expanded={isMenuOpen}
+          >
             {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-            <span className="sr-only">Toggle menu</span>
           </Button>
           <Link href="/" className="flex items-center gap-2">
             <Image
@@ -132,24 +96,36 @@ export function Navbar() {
               height={53}
               alt="Table Fresh Logo"
               className="h-[53px] w-[40px]"
+              priority
             />
             <div className="flex flex-col">
               <div className="">
                 <p className="text-[16px] font-semibold text-black">TABLE</p>
                 <p className="text-[16px] font-normal text-[#039B06]">FRESH</p>
               </div>
-              <span className="text-[6px] font-medium leading-[120%] space-x-[5%] text-[#8F8F8F]">Fresh & Healthy</span>
+              <span className="text-[6px] font-medium leading-[120%] space-x-[5%] text-[#8F8F8F]">
+                Fresh & Healthy
+              </span>
             </div>
           </Link>
         </div>
 
+        {/* Mobile Menu with backdrop */}
+        {isMenuOpen && (
+          <div 
+            className="fixed inset-0 z-40 bg-black/50 md:hidden" 
+            onClick={() => setIsMenuOpen(false)}
+          />
+        )}
+
         <nav
           className={cn(
-            "absolute left-0 right-0 top-16 z-50 bg-background p-4 shadow-lg md:static md:p-0 md:shadow-none",
-            isMenuOpen ? "flex" : "hidden md:flex",
+            "absolute left-0 right-0 top-[90px] z-50 bg-background p-4 shadow-lg transition-all duration-300 md:static md:top-0 md:flex md:p-0 md:shadow-none",
+            isMenuOpen ? "flex translate-y-0 opacity-100" : "hidden -translate-y-2 opacity-0 md:flex md:translate-y-0 md:opacity-100"
           )}
+          aria-label="Main navigation"
         >
-          <ul className="flex w-full flex-col items-start gap-2 md:flex-row md:items-center md:gap-6">
+          <ul className="flex w-full flex-col items-start gap-6 md:flex-row md:items-center">
             {navLinks.map((link) => (
               <li key={link.name}>
                 <Link
@@ -169,23 +145,23 @@ export function Navbar() {
         </nav>
 
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" className="hidden md:flex">
+          <Button variant="ghost" size="icon" className="hidden md:flex" aria-label="Messages">
             <MessageCircle className="h-5 w-5" />
-            <span className="sr-only">Messages</span>
           </Button>
-          <Link href="/cart">
+          <Link href="/cart" aria-label="Shopping cart">
             <Button variant="ghost" size="icon">
               <ShoppingCart className="h-5 w-5" />
-              <span className="sr-only">Cart</span>
             </Button>
           </Link>
           {isLoggedIn ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Avatar className="h-8 w-8 border border-[#039B06] cursor-pointer">
-                  <AvatarImage src="/placeholder.svg?height=32&width=32" alt="User" />
-                  <AvatarFallback>{getUserInitials()}</AvatarFallback>
-                </Avatar>
+                <button className="rounded-full focus:outline-none focus:ring-2 focus:ring-[#039B06] focus:ring-offset-2">
+                  <Avatar className="h-8 w-8 border border-[#039B06]">
+                    <AvatarImage src={session.user?.image || "/placeholder.svg"} alt={userName} />
+                    <AvatarFallback>{getUserInitials()}</AvatarFallback>
+                  </Avatar>
+                </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
                 <DropdownMenuItem asChild>
@@ -203,7 +179,10 @@ export function Navbar() {
                   </DropdownMenuItem>
                 )}
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="cursor-pointer" onClick={handleLogout}>
+                <DropdownMenuItem 
+                  className="cursor-pointer focus:bg-red-50 focus:text-red-500" 
+                  onClick={handleLogout}
+                >
                   <LogOut className="mr-2 h-4 w-4" />
                   Log out
                 </DropdownMenuItem>
@@ -216,7 +195,12 @@ export function Navbar() {
               </Button>
             </Link>
           )}
-          <Button variant="outline" size="sm" className="hidden md:flex text-white bg-[#039B06]">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="hidden md:flex text-white bg-[#039B06] hover:bg-[#028a05]"
+            onClick={() => router.push("/donate")}
+          >
             <Heart className="mr-2 h-4 w-4" />
             Donate
           </Button>
