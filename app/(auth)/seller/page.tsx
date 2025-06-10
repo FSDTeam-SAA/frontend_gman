@@ -197,8 +197,6 @@ export default function SellerPage() {
                           height={1000}
                           alt={`Farm image ${index + 1}`}
                           className="h-full w-full object-cover rounded-md"
-                          width={0}
-                          height={0}
                         />
                         <button
                           type="button"

@@ -1,7 +1,12 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";  // import Inter font
 import "./globals.css";
+<<<<<<< HEAD
 import { Providers } from "@/components/sheard/session-provider";
+=======
+import AppProvider from "@/provider/AppProvider";
+import { Toaster } from "sonner";
+>>>>>>> 41dee5d0f187b6fa4c29a7d824b5048438e28cd4
 
 const inter = Inter({
   variable: "--font-inter",
@@ -28,9 +33,17 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} antialiased`}>
+<<<<<<< HEAD
         <Providers>
         {children}
         </Providers>
+=======
+        <AppProvider>
+          {children}
+           <Toaster />
+        </AppProvider>
+      
+>>>>>>> 41dee5d0f187b6fa4c29a7d824b5048438e28cd4
       </body>
     </html>
   );

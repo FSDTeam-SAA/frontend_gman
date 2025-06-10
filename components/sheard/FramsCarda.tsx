@@ -6,25 +6,33 @@ import Link from "next/link"
 interface FarmsCardProps {
   id: number
   name: string
-  location: string
+  location: string | { street?: string; city?: string; state?: string; zipCode?: string }
   image: string
   profileImage: string
   description: string
   rating: number
+  street?: string
+  state?: string
 }
 
-const FarmsCard: React.FC<FarmsCardProps> = ({ id, name, location, image, profileImage, description, rating }) => {
+const FarmsCard: React.FC<FarmsCardProps> = ({ id, name, location, image, profileImage, description, rating ,street, state}) => {
+  // Format location based on whether it's a string or an object
+  const formattedLocation =
+    typeof location === "string"
+      ? location
+      : `${location.city || ""}, ${location.state || ""}`.trim().replace(/^,\s*/, "")
+
   return (
-    <div className="w-full ">
+    <div className="w-full">
       {/* Main Farm Image */}
       <div className="w-full relative">
-          <div className="bg-white w-[50px] h-[50px] rounded-full absolute top-4 right-4 flex items-center justify-center shadow-lg cursor-pointer">
-                  <MessageCircle className=" text-" />
-              </div>
+        <div className="bg-white w-[50px] h-[50px] rounded-full absolute top-4 right-4 flex items-center justify-center shadow-lg cursor-pointer hover:bg-gray-50 transition-colors">
+          <MessageCircle className="w-5 h-5 text-gray-600" />
+        </div>
         <Image
-          src={image || "/placeholder.svg?height=180&width=320&query=farm field with workers" || "/placeholder.svg"}
-            width={1000}
-            height={1000}
+          src={image || "/placeholder.svg?height=260&width=320"}
+          width={320}
+          height={260}
           alt={name}
           className="w-full h-[200px] sm:h-[220px] md:h-[240px] lg:h-[260px] object-cover rounded-[24px] sm:rounded-[28px] md:rounded-[32px]"
         />
@@ -36,11 +44,10 @@ const FarmsCard: React.FC<FarmsCardProps> = ({ id, name, location, image, profil
         <div className="space-y-1 sm:space-y-1.5 md:space-y-2 lg:space-y-1">
           <div className="flex items-center gap-2 sm:gap-2.5 md:gap-3 lg:gap-2">
             <div className="rounded-full overflow-hidden w-[40px] h-[40px] sm:w-[45px] sm:h-[45px] md:w-[55px] md:h-[55px] lg:w-[50px] lg:h-[50px] flex-shrink-0">
-            
               <Image
-                width={1000}
-                height={1000}
-                src={profileImage || "/placeholder.svg?height=32&width=32&query=farm logo" || "/placeholder.svg"}
+                width={50}
+                height={50}
+                src={profileImage}
                 alt={`${name} profile`}
                 className="w-full h-full object-cover"
               />
@@ -50,11 +57,9 @@ const FarmsCard: React.FC<FarmsCardProps> = ({ id, name, location, image, profil
                 {name}
               </h3>
               <div className="flex items-center gap-1">
-                <span>
-                  <MapPin className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 lg:w-3 lg:h-3 flex-shrink-0" />
-                </span>
+                <MapPin className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 lg:w-3 lg:h-3 flex-shrink-0 text-gray-500" />
                 <p className="text-sm sm:text-base md:text-lg lg:text-base text-[#595959] font-normal truncate">
-                  {location}
+                  {formattedLocation},{state} {street}
                 </p>
               </div>
             </div>
@@ -68,7 +73,7 @@ const FarmsCard: React.FC<FarmsCardProps> = ({ id, name, location, image, profil
           <div className="flex items-center gap-1 mt-2 sm:mt-2.5 md:mt-3">
             <Star className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 lg:w-5 lg:h-5 fill-[#FACC15] text-[#FACC15]" />
             <span className="text-sm sm:text-base md:text-lg lg:text-base font-medium text-[#000000]">
-              {rating.toFixed(1)} {"(127)"}
+              {rating ? rating.toFixed(1) : "0.0"}
             </span>
           </div>
 
