@@ -16,8 +16,8 @@ export default function MissionTableFresh() {
       </header>
 
       {/* Main Content Section */}
-      <section className="w-[1296px] mx-auto px-4 py-6 md:py-12 lg:py-16">
-        <div className="grid md:grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 lg:gap-16 items-start">
+      <section className="max-w-7xl mx-auto px-4 py-6 md:py-12 lg:py-16">
+        <div className="grid md:grid-cols-1 lg:grid-cols-2 items-center gap-6 md:gap-8 lg:gap-16">
           {/* Left Content */}
           <div className="space-y-4 md:space-y-6 order-2 lg:order-1">
             <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#272727] leading-tight">
@@ -74,7 +74,7 @@ export default function MissionTableFresh() {
           {/* Right Content - Issues */}
           <div className="space-y-3">
             <Card className="border border-l-4 border-[#039B06]">
-              <CardContent className="px-3 py-3 sm:py-4">
+              <CardContent className="px-3">
                 <h3 className="font-semibold text-base text-[#272727] mb-1">Genetic Modification</h3>
                 <p className="text-[#595959] text-sm font-normal">
                   Altering the natural structure of our food for profit over health.
@@ -83,7 +83,7 @@ export default function MissionTableFresh() {
             </Card>
 
             <Card className="border border-l-4 border-[#039B06]">
-              <CardContent className="px-3 py-3 sm:py-4">
+              <CardContent className="px-3">
                 <h3 className="font-semibold text-base text-[#272727] mb-1">Dangerous Cancer Causing Chemicals</h3>
                 <p className="text-[#595959] text-sm font-normal">
                   Herbicides, Pesticides and Other Dangerous elements For Our Health
@@ -92,7 +92,7 @@ export default function MissionTableFresh() {
             </Card>
 
             <Card className="border border-l-4 border-[#039B06]">
-              <CardContent className="px-3 py-3 sm:py-4">
+              <CardContent className="px-3">
                 <h3 className="font-semibold text-base text-[#272727] mb-1">Nitrogen Packaging</h3>
                 <p className="text-[#595959] text-sm font-normal">
                   Food packaged with nitrogen to prevent spoilage, extending shelf life at the cost of nutrition.
@@ -109,7 +109,7 @@ export default function MissionTableFresh() {
 
       {/* Mission Section */}
       <section className="max-w-7xl mx-auto px-4 py-6 md:py-12 lg:py-16">
-        <div className="grid md:grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 lg:gap-16 items-start">
+        <div className="grid md:grid-cols-1 lg:grid-cols-2 items-center gap-6 md:gap-8 lg:gap-16 items-start">
           {/* Left Content */}
           <div className="space-y-4 md:space-y-6 order-2 lg:order-1">
             <h2 className="text-xl sm:text-2xl lg:text-[32px] font-semibold text-[#272727] mb-2 md:mb-4 leading-tight">

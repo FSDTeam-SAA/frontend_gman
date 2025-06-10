@@ -26,6 +26,8 @@ export default function SalesPage() {
     // Add more mock sales...
   ])
 
+  console.log(setSales)
+
   const totalSales = 132570
 
   return (

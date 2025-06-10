@@ -1,163 +1,188 @@
-import Image from "next/image"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
+import Image from "next/image";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export default function BecomeSellerPage() {
   return (
     <div className="min-h-screen bg-white">
       <div className="container mx-auto py-12 px-4">
         <h1 className="text-3xl font-bold mb-8">Who should sign up to sell</h1>
-
-        <div className="space-y-16">
+        
+        {/* Gardeners & Bakers */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
           {/* Gardeners */}
-          <div className="flex flex-col md:flex-row items-center gap-8">
-            <div className="md:w-1/3 flex justify-center">
+          <div className="">
+            <div className="">
               <Image
-                src=""
+                src="/asset/seller/seller-1.png"
                 alt="Gardeners working in a garden"
-                width={400}
-                height={300}
-                className="rounded-lg"
+                width={1000}
+                height={1000}
+                className="rounded-lg w-full h-[350px] object-cover"
               />
             </div>
-            <div className="md:w-2/3">
+            <div className="mt-4">
               <p className="text-gray-700">
-                All gardeners, backyard gardeners, organic gardeners, anyone with a garden. Sign up is simple and free.
-                Fill out the registration, add your pictures and you&apos;ll appear on the map for everyone to find you. Your
-                exact address will never be made public.
+                All gardeners, backyard gardeners, organic gardeners, anyone
+                with a garden. Sign up is simple and free. Fill out the
+                registration, add your pictures and you&apos;ll appear on the
+                map for everyone to find you. Your exact address will never be
+                made public.
               </p>
             </div>
           </div>
 
           {/* Bakers */}
-          <div className="flex flex-col md:flex-row-reverse items-center gap-8">
-            <div className="md:w-1/3 flex justify-center">
-              <Image
-                src="/placeholder.svg?height=300&width=400"
-                alt="Freshly baked bread and pastries"
-                width={400}
-                height={300}
-                className="rounded-lg"
-              />
-            </div>
-            <div className="md:w-2/3">
+          <div className="flex flex-col">
+            <div className="order-2 md:order-1 mb-4">
               <p className="text-gray-700">
-                Bakers, whether you&apos;re a small bakery or baking artisan baked goods from your kitchen, you&apos;re encouraged
-                Bakers, whether you&quot;re a small bakery or baking artisan baked goods from your kitchen, you&quot;re encouraged
-                to sign up, and increase your sales.
+                Bakers, whether you&apos;re a small bakery or baking artisan
+                baked goods from your kitchen, you&apos;re encouraged to sign up 
+                and increase your sales. Sell your fresh bread, pastries, and 
+                other baked goods to local customers.
               </p>
             </div>
-          </div>
-
-          {/* Preserves */}
-          <div className="flex flex-col md:flex-row items-center gap-8">
-            <div className="md:w-1/3 flex justify-center">
+            <div className="order-1 md:order-2">
               <Image
-                src="/placeholder.svg?height=300&width=400"
-                alt="Jars of preserves and jams"
-                width={400}
-                height={300}
-                className="rounded-lg"
+                src="/asset/seller/seller-2.png"
+                alt="Freshly baked bread and pastries"
+                width={1000}
+                height={1000}
+                className="rounded-lg w-full h-[350px] object-cover"
               />
             </div>
-            <div className="md:w-2/3">
+          </div>
+        </div>
+
+        {/* Preserves & Orchards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+          {/* Preserves */}
+          <div className="flex flex-col">
+            <div>
+              <Image
+                src="/asset/seller/seller-3.png"
+                alt="Jars of preserves and jams"
+                width={1000}
+                height={1000}
+                className="rounded-lg w-full h-[350px] object-cover"
+              />
+            </div>
+            <div className="mt-4">
               <p className="text-gray-700">
-                Jam, jellies, preserves, canned goods with a profile on table fresh, you&apos;re neighbors, locals can find
-                you. You can sell you products locally or ship nationwide, and it&apos;s free to join.
-                Jam, jellies, preserves, canned goods with a profile on table fresh, you&quot;re neighbors, locals can find
-                you. You can sell you products locally or ship nationwide, and it&quot;s free to join.
+                Jam, jellies, preserves, canned goods with a profile on Table
+                Fresh - your neighbors and locals can find you. You can sell
+                your products locally or ship nationwide, and it&apos;s free to
+                join.
               </p>
             </div>
           </div>
 
           {/* Orchards */}
-          <div className="flex flex-col md:flex-row-reverse items-center gap-8">
-            <div className="md:w-1/3 flex justify-center">
+          <div className="flex flex-col">
+            <div className="order-2 md:order-1 mb-4">
+              <p className="text-gray-700">
+                Orchards growing apples, oranges, lemons, limes, pears, or any 
+                other fruit can connect with customers. Sell your fresh produce 
+                locally or ship nationwide to reach more customers.
+              </p>
+            </div>
+            <div className="order-1 md:order-2">
               <Image
-                src="/placeholder.svg?height=300&width=400"
+                src="/asset/seller/seller-4.png"
                 alt="Fruit orchard with lemons"
-                width={400}
-                height={300}
-                className="rounded-lg"
+                width={1000}
+                height={1000}
+                className="rounded-lg w-full h-[350px] object-cover"
               />
             </div>
-            <div className="md:w-2/3">
+          </div>
+        </div>
+
+        {/* Restaurants */}
+        <div className="grid grid-cols-1 mb-12">
+          <div className="flex flex-col md:flex-row items-center gap-8">
+            <div className="w-full md:w-1/2">
+              <Image
+                src="/asset/seller/seller-5.png"
+                alt="Restaurant chef preparing food"
+                width={1000}
+                height={1000}
+                className="rounded-lg w-full h-[350px] object-cover"
+              />
+            </div>
+            <div className="w-full md:w-1/2">
               <p className="text-gray-700">
-                Orchards apples, oranges, lemons, limes, pears, whatever you grow, you can sell and ship nationwide.
+                Restaurants and caterers serving locally sourced products can 
+                showcase their offerings. Connect with customers who value 
+                fresh, local ingredients and build your customer base.
               </p>
             </div>
           </div>
+        </div>
 
-          {/* Restaurants */}
-          <div className="flex flex-col md:flex-row items-center gap-8">
-            <div className="md:w-1/3 flex justify-center">
-              <Image
-                src="/placeholder.svg?height=300&width=400"
-                alt="Restaurant chef preparing food"
-                width={400}
-                height={300}
-                className="rounded-lg"
-              />
-            </div>
-            <div className="md:w-2/3">
-              <p className="text-gray-700">Restaurants and Caterers serving locally sourced products</p>
-            </div>
+        {/* Other categories */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+          <div className="flex flex-col">
+            <Image
+              src="/asset/seller/seller-6.png"
+              alt="Smoked meats and fish"
+              width={1000}
+              height={1000}
+              className="rounded-lg w-full h-[250px] object-cover mb-4"
+            />
+            <p className="text-gray-700 text-center">
+              Smoked meats and fish from local producers
+            </p>
           </div>
 
-          {/* Other categories */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-            <div className="flex flex-col items-center text-center">
-              <Image
-                src="/placeholder.svg?height=250&width=350"
-                alt="Smoked meats and fish"
-                width={350}
-                height={250}
-                className="rounded-lg mb-4"
-              />
-              <p className="text-gray-700">Smoked meats and fish</p>
-            </div>
+          <div className="flex flex-col">
+            <Image
+              src="/asset/seller/seller-7.png"
+              alt="Fresh seafood"
+              width={1000}
+              height={1000}
+              className="rounded-lg w-full h-[250px] object-cover mb-4"
+            />
+            <p className="text-gray-700 text-center">
+              Fresh seafood, oysters, clams, shrimp, and fish
+            </p>
+          </div>
 
-            <div className="flex flex-col items-center text-center">
-              <Image
-                src="/placeholder.svg?height=250&width=350"
-                alt="Fresh seafood"
-                width={350}
-                height={250}
-                className="rounded-lg mb-4"
-              />
-              <p className="text-gray-700">Fresh seafood, oysters clams, shrimp, fish.</p>
-            </div>
+          <div className="flex flex-col">
+            <Image
+              src="/asset/seller/seller-8.png"
+              alt="Dairy products"
+              width={1000}
+              height={1000}
+              className="rounded-lg w-full h-[250px] object-cover mb-4"
+            />
+            <p className="text-gray-700 text-center">
+              Dairy products including cheese, yogurt, kefir, and homemade butter
+            </p>
+          </div>
 
-            <div className="flex flex-col items-center text-center">
-              <Image
-                src="/placeholder.svg?height=250&width=350"
-                alt="Dairy products"
-                width={350}
-                height={250}
-                className="rounded-lg mb-4"
-              />
-              <p className="text-gray-700">Dairy products such as cheese, yogurt, kefir, homemade butter.</p>
-            </div>
-
-            <div className="flex flex-col items-center text-center">
-              <Image
-                src="/placeholder.svg?height=250&width=350"
-                alt="Fresh meats"
-                width={350}
-                height={250}
-                className="rounded-lg mb-4"
-              />
-              <p className="text-gray-700">Fresh meats, next day shipping available.</p>
-            </div>
+          <div className="flex flex-col">
+            <Image
+              src="/asset/seller/seller-9.png"
+              alt="Fresh meats"
+              width={1000}
+              height={1000}
+              className="rounded-lg w-full h-[250px] object-cover mb-4"
+            />
+            <p className="text-gray-700 text-center">
+              Fresh meats with next-day shipping available
+            </p>
           </div>
         </div>
 
         <div className="mt-12 flex justify-center">
           <Link href="/seller">
-            <Button className="bg-green-600 hover:bg-green-700">Agree & Continue</Button>
+            <Button className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 text-lg cursor-pointer">
+              Agree & Continue
+            </Button>
           </Link>
         </div>
       </div>
     </div>
-  )
+  );
 }

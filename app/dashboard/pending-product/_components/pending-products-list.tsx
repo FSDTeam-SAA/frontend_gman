@@ -54,9 +54,8 @@ export function PendingProductsList({ onEdit }: PendingProductsListProps) {
       if (data.success) {
         setProducts(data.data || [])
       }
-    } catch (error) {
-      console.error("Error fetching products:", error)
-      toast.error
+    } catch {
+      toast.error("Error fetching products")
     } finally {
       setLoading(false)
     }

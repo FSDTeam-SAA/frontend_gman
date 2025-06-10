@@ -56,70 +56,75 @@ const testimonials = [
 
 export default function TestimonialCarousel() {
   return (
-    <div className="container mx-auto px-4 py-12">
-      <div className="flex justify-between items-center mb-8">
-        <h2 className="text-xl font-semibold text-[#272727]">What Our Customers Say</h2>
-      </div>
-
-      <Carousel
-        opts={{
-          align: "start",
-          loop: true,
-        }}
-        className="w-full"
-      >
-        <div className="flex justify-end gap-2 mt-4">
-          <CarouselPrevious className="h-9 w-9 rounded-md border border-green-500 flex items-center justify-center text-green-500 hover:bg-green-50 static" />
-          <CarouselNext className="h-9 w-9 rounded-md border border-green-500 flex items-center justify-center text-green-500 hover:bg-green-50 static" />
-        </div>
-        <CarouselContent className="-ml-4">
-          {testimonials.map((testimonial) => (
-            <CarouselItem
-              key={testimonial.id}
-              className="pl-4 md:basis-1/2 lg:basis-1/3"
-            >
-              <div className="h-full">
-                <Card className="border rounded-lg p-6 h-full">
-                  <CardContent className="p-0 space-y-4 flex flex-col h-full">
-                    <div className="flex">
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className={`w-5 h-5 ${
-                            i < testimonial.rating
-                              ? "text-yellow-400 fill-yellow-400"
-                              : "text-gray-300"
-                          }`}
-                        />
-                      ))}
-                    </div>
-                    <p className="text-base text-[#272727] font-normal leading-[150%] flex-grow">
-                      {testimonial.text}
-                    </p>
-                    <div className="flex items-center gap-3 mt-6">
-                      <Image
-                        src={testimonial.avatar || "/placeholder.svg"}
-                        alt={testimonial.author}
-                        width={40}
-                        height={40}
-                        className="rounded-full"
-                      />
-                      <div >
-                        <p className="font-medium text-[#595959] text-[18px]">
-                          {testimonial.author}
-                        </p>
-                        <p className="text-sm text-[#6B7280] font-normal">
-                          {testimonial.location}
-                        </p>
+    <div className="bg-white mb-[60px] !md:mb-[120px]">
+      <div className="container mx-auto px-4 md:px-0 py-12 ">
+        <Carousel
+          opts={{
+            align: "start",
+            loop: true,
+          }}
+          className="w-full"
+        >
+          <div className="flex items-center justify-between pb-4">
+            <div className="">
+              <h2 className="text-xl font-semibold text-[#272727] pb-2">
+                What Our Customers Say
+              </h2>
+            </div>
+            <div className="flex justify-end gap-2 mt-4">
+              <CarouselPrevious className="h-9 w-9 rounded-md border border-green-500 flex items-center justify-center text-green-500 hover:bg-green-50 static" />
+              <CarouselNext className="h-9 w-9 rounded-md border border-green-500 flex items-center justify-center text-green-500 hover:bg-green-50 static" />
+            </div>
+          </div>
+          <CarouselContent className="-ml-4">
+            {testimonials.map((testimonial) => (
+              <CarouselItem
+                key={testimonial.id}
+                className="pl-4 md:basis-1/2 lg:basis-1/3"
+              >
+                <div className="h-full">
+                  <Card className="border rounded-lg p-6 h-full">
+                    <CardContent className="p-0 space-y-4 flex flex-col h-full">
+                      <div className="flex">
+                        {[...Array(5)].map((_, i) => (
+                          <Star
+                            key={i}
+                            className={`w-5 h-5 ${
+                              i < testimonial.rating
+                                ? "text-yellow-400 fill-yellow-400"
+                                : "text-gray-300"
+                            }`}
+                          />
+                        ))}
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-      </Carousel>
+                      <p className="text-base text-[#272727] font-normal leading-[150%] flex-grow">
+                        {testimonial.text}
+                      </p>
+                      <div className="flex items-center gap-3 mt-6">
+                        <Image
+                          src={testimonial.avatar || "/placeholder.svg"}
+                          alt={testimonial.author}
+                          width={40}
+                          height={40}
+                          className="rounded-full"
+                        />
+                        <div>
+                          <p className="font-medium text-[#595959] text-[18px]">
+                            {testimonial.author}
+                          </p>
+                          <p className="text-sm text-[#6B7280] font-normal">
+                            {testimonial.location}
+                          </p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+        </Carousel>
+      </div>
     </div>
   );
 }

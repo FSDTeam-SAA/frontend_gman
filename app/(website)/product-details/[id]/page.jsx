@@ -337,7 +337,7 @@ export default function Page() {
                         </div>
                       </div>
                       <p className="text-[#272727] text-base font-normal leading-[150%] mt-6">
-                        &quot;I've been ordering from TABLEFRESH for over year now, and the quality of their organic produce
+                        &quot;I&apos;ve been ordering from TABLEFRESH for over year now, and the quality of their organic produce
                         is consistently excellent. The convenience of having fresh, organic food delivered to my door
                         has made healthy eating so much easier for my family.&quot;
                       </p>

@@ -5,18 +5,18 @@ import { Phone, Mail, MapPin } from "lucide-react"
 
 export default function ContactForm() {
   return (
-    <div className="mt-16 md:mt-24 lg:mt-[100px] px-4 sm:px-6 lg:px-8">
+    <div className="my-16 md:my-24 lg:my-[100px] px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="overflow-hidden  ">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-7 min-h-[600px] lg:min-h-[629px]">
             {/* Contact Information Panel */}
             <div
-              className="relative w-full h-full min-h-[4740px] lg:min-h-[629px] !rounded-[10px] bg-cover bg-center bg-no-repeat"
+              className="relative w-full h-full min-h-[340px] lg:min-h-[629px] !rounded-[10px] bg-cover bg-center bg-no-repeat"
               style={{
                 backgroundImage: `url('/asset/contact.png')`,
               }}
             >
-              <div className="absolute inset-0 bg-black/10"></div>
+              <div className="absolute inset-0 bg-black/10 !rounded-[10px]"></div>
               <div className="relative z-10 p-6 sm:p-8 lg:p-[32px] h-full flex flex-col justify-between">
                 <div>
                   <h2 className="text-xl lg:text-2xl text-[#272727] font-semibold mb-4">Contact Information</h2>
@@ -68,8 +68,8 @@ export default function ContactForm() {
             </div>
 
             {/* Contact Form */}
-            <div className="bg-white p-6 sm:p-8 lg:p-0 flex flex-col justify-center">
-              <form className="space-y-9 w-full max-w-md mx-auto lg:max-w-none">
+            <div className="bg-white !rounded-[10px] p-6 sm:p-8 lg:p-0 flex flex-col justify-center">
+              <form className="space-y-9 w-full max-w-full mx-auto md:p-4">
                 <div className="grid grid-cols-1 gap-6">
                   <div>
                     <Input

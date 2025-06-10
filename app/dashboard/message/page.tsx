@@ -25,6 +25,8 @@ export default function MessagesInterface() {
       avatar: "/placeholder.svg?height=40&width=40",
     },
   ])
+
+  console.log(setMessages)
   const [newMessage, setNewMessage] = useState("")
 
   const handleSendMessage = () => {

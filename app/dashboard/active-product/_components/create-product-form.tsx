@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { X, Upload } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -47,14 +47,7 @@ export function CreateProductForm({ onClose, onSuccess, productId }: CreateProdu
   const farmId = session.data?.user.farm
   const token = session.data?.accessToken
 
-  useEffect(() => {
-    fetchCategories()
-    if (productId) {
-      fetchProduct()
-    }
-  }, [productId])
-
-  const fetchCategories = async () => {
+  const fetchCategories = useCallback(async () => {
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/seller/categories`, {
         headers: {
@@ -69,9 +62,9 @@ export function CreateProductForm({ onClose, onSuccess, productId }: CreateProdu
       console.error("Error fetching categories:", error)
       toast.error("Failed to load categories")
     }
-  }
+  }, [token])
 
-  const fetchProduct = async () => {
+  const fetchProduct = useCallback(async () => {
     try {
       setFetchingProduct(true)
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/seller/products/${productId}`, {
@@ -102,7 +95,14 @@ export function CreateProductForm({ onClose, onSuccess, productId }: CreateProdu
     } finally {
       setFetchingProduct(false)
     }
-  }
+  }, [token, productId])
+
+  useEffect(() => {
+    fetchCategories()
+    if (productId) {
+      fetchProduct()
+    }
+  }, [fetchCategories, fetchProduct, productId])
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
@@ -171,7 +171,7 @@ export function CreateProductForm({ onClose, onSuccess, productId }: CreateProdu
       }
 
       if (media.length > 0) {
-        media.forEach((file, index) => {
+        media.forEach((file) => {
           formDataToSend.append(`media`, file)
         })
       }
@@ -198,7 +198,6 @@ export function CreateProductForm({ onClose, onSuccess, productId }: CreateProdu
         })
         onSuccess()
         if (!isEditing) {
-          // Optionally redirect or refresh the product list
           router.refresh()
         }
       } else {
@@ -387,7 +386,7 @@ export function CreateProductForm({ onClose, onSuccess, productId }: CreateProdu
                           alt={`Product image ${index + 1}`}
                           className="w-full h-20 object-cover rounded-md"
                           width={800}
-                          height={800 }
+                          height={800}
                         />
                         <Button
                           type="button"
