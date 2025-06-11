@@ -55,7 +55,7 @@ interface ApiResponse {
   };
 }
 
-const Featured_Farms = () => {
+const All_farms = () => {
   const { data, isLoading, error } = useQuery<ApiResponse>({
     queryKey: ["farms"],
     queryFn: async () => {
@@ -87,9 +87,6 @@ const Featured_Farms = () => {
   if (isLoading) {
     return (
       <section className="container mx-auto px-4 md:px-0 py-12 mt-[100px]">
-        <h2 className="text-3xl text-[#272727] font-semibold mb-8">
-          Featured Farms
-        </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {[...Array(4)].map((_, index) => (
             <div key={index} className="animate-pulse">
@@ -115,9 +112,7 @@ const Featured_Farms = () => {
   if (error) {
     return (
       <section className="container mx-auto px-4 md:px-0 py-12 mt-[100px]">
-        <h2 className="text-3xl text-[#272727] font-semibold mb-8">
-          Featured Farms
-        </h2>
+      
         <div className="text-center py-12">
           <p className="text-red-600 text-lg">
             {error instanceof Error
@@ -132,9 +127,7 @@ const Featured_Farms = () => {
   return (
     <section className="container mx-auto px-4 md:px-0 py-12 mt-[40px] md:mt-[100px]">
       <div>
-        <h2 className="text-3xl text-[#272727] font-semibold mb-8">
-          Featured Farms
-        </h2>
+       
 
         {/* Grid layout for farm cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -179,4 +172,4 @@ const Featured_Farms = () => {
   );
 };
 
-export default Featured_Farms;
+export default All_farms;

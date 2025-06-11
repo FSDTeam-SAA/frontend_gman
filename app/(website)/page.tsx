@@ -1,4 +1,6 @@
 import Add_Banner from '@/components/Add_Banner';
+import All_farms from '@/components/All_farm';
+
 import Featured_Farms from '@/components/Featured_Farms';
 import HeroSection from '@/components/Hero';
 import Searchbar from '@/components/Searchbar';
@@ -15,7 +17,7 @@ const Page = () => {
       </div>
       <Featured_Farms />
       <Add_Banner/>
-       <Featured_Farms />
+       <All_farms/>
 
     </div>
   );
