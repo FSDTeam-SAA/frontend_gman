@@ -27,7 +27,7 @@ export default function ForgotPasswordPage() {
     setIsLoading(true)
 
     try {
-      const response = await fetch("https://gman54-backend.onrender.com/api/v1/auth/forget", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/forget`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
