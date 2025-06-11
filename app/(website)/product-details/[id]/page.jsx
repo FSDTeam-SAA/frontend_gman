@@ -151,7 +151,7 @@ export default function Page() {
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-10">
-                <Button className="bg-[#039B06] w-[377px] h-[44px] hover:bg-[#039B06]/80 text-white rounded-[4px]">
+                <Button className="bg-[#039B06] w-[377px] h-[44px] hover:bg-[#039B06]/80 text-white rounded-[4px">
                   Purchase
                 </Button>
                 <Button className="h-[44px] w-[175px] rounded-[4px] bg-transparent border border-[#00000033] text-[#039B06]">

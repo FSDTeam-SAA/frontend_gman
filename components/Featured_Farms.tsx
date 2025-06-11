@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query"; // Fixed typo in path ("sheard/FramsCarda" → "shared/FarmsCard")
+import { useQuery } from "@tanstack/react-query";
 import FarmsCard from "./sheard/FramsCarda";
 
 interface Location {
@@ -71,6 +71,11 @@ const Featured_Farms = () => {
     },
   });
 
+  // Helper function to get first letter of farm name
+  const getFirstLetter = (name: string) => {
+    return name.charAt(0).toUpperCase();
+  };
+
   if (isLoading) {
     return (
       <section className="container mx-auto px-4 md:px-0 py-12 mt-[100px]">
@@ -126,27 +131,33 @@ const Featured_Farms = () => {
         {/* Grid layout for farm cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {data && data.data && data.data.length > 0 ? (
-            data.data.map((farm: Farm) => (
-              <FarmsCard
-                key={farm._id}
-                id={farm._id}
-                name={farm.name || "Farm Name"}
-                location={farm.location?.city || "Unknown city"}
-                street={farm.location?.street || "Unknown street"}
-                state={farm.location?.state || "Unknown state"}
-                image={
-                  farm.images?.[0]?.url ||
-                  "/placeholder.svg?height=260&width=320"
-                }
-                profileImage={
-                  farm.seller?.avatar?.url ||
-                  farm.profileImage ||
-                  "/placeholder.svg?height=260&width=320"
-                }
-                description={farm.description || "No description available"}
-                rating={farm.rating || 0}
-              />
-            ))
+            data.data.map((farm: Farm) => {
+              const hasProfileImage = farm.seller?.avatar?.url || farm.profileImage;
+              
+              return (
+                <FarmsCard
+                  key={farm._id}
+                  id={farm._id}
+                  name={farm.name || "Farm Name"}
+                  location={farm.location?.city || "Unknown city"}
+                  street={farm.location?.street || "Unknown street"}
+                  state={farm.location?.state || "Unknown state"}
+                  image={
+                    farm.images?.[0]?.url ||
+                    "/placeholder.svg?height=260&width=320"
+                  }
+                  profileImage={
+                    hasProfileImage
+                      ? farm.seller?.avatar?.url ||
+                        farm.profileImage ||
+                        "/placeholder.svg?height=260&width=320"
+                      : "/placeholder.svg?height=50&width=50&text=" + encodeURIComponent(getFirstLetter(farm.name || "F"))
+                  }
+                  description={farm.description || "No description available"}
+                  rating={farm.rating || 0}
+                />
+              );
+            })
           ) : (
             <div className="col-span-full text-center py-12">
               <p className="text-gray-600 text-lg">
