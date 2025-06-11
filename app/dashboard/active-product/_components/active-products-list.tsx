@@ -1,48 +1,86 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import Image from "next/image"
-import { Trash2 } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { useState } from "react";
+import Image from "next/image";
+import { Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { useSession } from "next-auth/react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 interface Product {
-  id: string
-  name: string
-  price: number
-  quantity: string
-  date: string
-  image: string
+  _id: string;
+  title: string;
+  price: number;
+  quantity: string;
+  createdAt: string;
+  thumbnail: {
+    url: string;
+  };
 }
 
 export function ActiveProductsList() {
-  const [products, setProducts] = useState<Product[]>([])
-  const [loading, setLoading] = useState(true)
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      setLoading(true)
-      // Mock API call
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-      setProducts([
+  const session = useSession();
+  const token = session.data?.accessToken;
+
+  // Fetch products
+  const { data: products, isLoading } = useQuery<Product[]>({
+    queryKey: ["activeProducts"],
+    queryFn: async () => {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/seller/active-products`,
         {
-          id: "1140",
-          name: "Fresh Fruits, California",
-          price: 8.0,
-          quantity: "100 KG / 1 box",
-          date: "05/31/2025 03:18pm",
-          image: "/placeholder.svg?height=64&width=64",
-        },
-        // Add more mock products...
-      ])
-      setLoading(false)
-    }
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const result = await response.json();
+      return result.data;
+    },
+    enabled: !!session?.data?.accessToken,
+  });
 
-    fetchProducts()
-  }, [])
+  // Delete mutation
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/seller/products/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (!response.ok) throw new Error("Failed to delete product");
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["activeProducts"] });
+      setDeleteId(null);
+    },
+  });
 
-  if (loading) {
+  if (isLoading) {
     return (
       <Card>
         <CardContent className="p-6">
@@ -51,12 +89,12 @@ export function ActiveProductsList() {
           </div>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   return (
-    <Card>
-      <CardContent className="p-0">
+    <>
+      <div>
         <Table>
           <TableHeader>
             <TableRow>
@@ -69,26 +107,33 @@ export function ActiveProductsList() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {products.map((product) => (
-              <TableRow key={product.id}>
+            {products?.map((product) => (
+              <TableRow key={product._id}>
                 <TableCell>
                   <div className="flex items-center gap-3">
                     <Image
-                      src={product.image || "/placeholder.svg"}
-                      alt={product.name}
+                      src={product.thumbnail.url || "/placeholder.svg"}
+                      alt={product.title}
                       width={48}
                       height={48}
                       className="rounded-md object-cover"
                     />
-                    {product.name}
+                    {product.title}
                   </div>
                 </TableCell>
-                <TableCell>{product.id}</TableCell>
+                <TableCell>{product._id}</TableCell>
                 <TableCell>${product.price.toFixed(2)}</TableCell>
                 <TableCell>{product.quantity}</TableCell>
-                <TableCell>{product.date}</TableCell>
                 <TableCell>
-                  <Button variant="ghost" size="sm">
+                  {new Date(product.createdAt).toLocaleString()}
+                </TableCell>
+                <TableCell>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="cursor-pointer"
+                    onClick={() => setDeleteId(product._id)}
+                  >
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </TableCell>
@@ -96,7 +141,31 @@ export function ActiveProductsList() {
             ))}
           </TableBody>
         </Table>
-      </CardContent>
-    </Card>
-  )
+      </div>
+
+      <Dialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Confirm Deletion</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this product? This action cannot
+              be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteId(null)} className="cursor-pointer">
+              No
+            </Button>
+            <Button
+              variant="destructive"
+               className="cursor-pointer"
+              onClick={() => deleteId && deleteMutation.mutate(deleteId)}
+            >
+              Yes
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
 }
