@@ -12,7 +12,7 @@ export default function ActiveProductsPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title={"Active Product List"}
+        title={"Panding Product List"}
         breadcrumb={"Dashboard › Active Product › List"}
         action={{
           label: "Add Product",

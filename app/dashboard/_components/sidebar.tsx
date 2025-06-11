@@ -1,7 +1,7 @@
 "use client"
 
 import { usePathname, useRouter } from "next/navigation"
-import { BarChart3, Package, ShoppingCart, MessageSquare, TrendingUp, LogOut } from "lucide-react"
+import { BarChart3, Package, ShoppingCart, MessageSquare, TrendingUp, LogOut, PackageSearch } from "lucide-react"
 
 import {
   Sidebar,
@@ -12,6 +12,8 @@ import {
   SidebarMenuItem,
   SidebarFooter,
 } from "@/components/ui/sidebar"
+import Link from "next/link"
+import Image from "next/image"
 
 const sidebarItems = [
   {
@@ -35,7 +37,7 @@ const sidebarItems = [
   {
     id: "pending-products",
     label: "Pending Product List",
-    icon: Package,
+    icon: PackageSearch,
     href: "/dashboard/pending-product",
   },
   {
@@ -64,17 +66,25 @@ export function DashboardSidebar() {
   }
 
   return (
-    <Sidebar className="!bg-[#014A14] text-white">
+    <Sidebar className="!bg-[#014A14] text-white p-2">
       <SidebarHeader className="p-4 !bg-[#014A14]">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-white rounded-md flex items-center justify-center">
-            <span className="text-green-700 font-bold text-sm">TF</span>
+        <Link href="#" className="flex items-center gap-2">
+          <Image
+            src="/asset/logo.png"
+            width={40}
+            height={53}
+            alt="Table Fresh Logo"
+            className="h-[53px] w-[40px]"
+            priority
+          />
+          <div className="flex flex-col">
+            <div className="">
+              <p className="text-[16px] font-semibold text-black">TABLE</p>
+              <p className="text-[16px] font-normal text-[#039B06]">FRESH</p>
+            </div>
+            <span className="text-[6px] font-medium leading-[120%] space-x-[5%] text-[#8F8F8F]">Fresh & Healthy</span>
           </div>
-          <div>
-            <p className="font-bold text-white">TABLE</p>
-            <p className="text-xs text-green-200">FRESH</p>
-          </div>
-        </div>
+        </Link>
       </SidebarHeader>
 
       <SidebarContent className="!bg-[#014A14]">
@@ -84,7 +94,7 @@ export function DashboardSidebar() {
               <SidebarMenuButton
                 onClick={() => router.push(item.href)}
                 isActive={isActive(item.href)}
-                className="text-white hover:bg-green-600 data-[active=true]:bg-green-600"
+                className="text-white text-[18px] my-4  cursor-pointer font-normal hover:bg-[#038C05] hover:text-white data-[active=true]:bg-[#038C05]"
               >
                 <item.icon className="h-4 w-4" />
                 <span>{item.label}</span>
