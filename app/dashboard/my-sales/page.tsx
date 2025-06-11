@@ -42,7 +42,7 @@ export default function SalesPage() {
       <Card className="bg-green-600 text-white">
         <CardContent className="p-6">
           <div>
-            <p className="text-sm opacity-90">Total Sales</p>
+            <p className="text-sm opacity-90">Total Salesssssssssss</p>
             <p className="text-3xl font-bold">${totalSales.toLocaleString()}.00</p>
           </div>
         </CardContent>
