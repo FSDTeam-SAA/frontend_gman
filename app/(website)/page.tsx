@@ -1,5 +1,5 @@
 import Add_Banner from '@/components/Add_Banner';
-import All_farms from '@/components/All_farm';
+
 
 import Featured_Farms from '@/components/Featured_Farms';
 import HeroSection from '@/components/Hero';
@@ -17,7 +17,7 @@ const Page = () => {
       </div>
       <Featured_Farms />
       <Add_Banner/>
-       <All_farms/>
+       {/* <All_farms/> */}
 
     </div>
   );
