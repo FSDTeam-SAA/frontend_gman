@@ -11,7 +11,7 @@ export default function ActiveProductsPage() {
   const queryClient = useQueryClient();
 
   return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-6">
+    <div className="space-y-6">
       <PageHeader
         title="Active Product List"
         breadcrumb="Dashboard › Active Product › List"

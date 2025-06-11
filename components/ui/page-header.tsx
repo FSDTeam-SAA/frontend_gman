@@ -23,7 +23,7 @@ export function PageHeader({ title, breadcrumb, action }: PageHeaderProps) {
       </div>
       {action && (
         <Button
-          className="bg-[#014A14] hover:bg-[#016A1A] cursor-pointer"
+          className="bg-[#039B06] hover:bg-[#014A14] cursor-pointer"
           variant={action.variant || "default"}
           onClick={action.onClick}
         >

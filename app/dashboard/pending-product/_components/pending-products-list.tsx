@@ -1,108 +1,110 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import Image from "next/image"
-import { Edit, Trash2 } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
-import { toast } from "sonner"
-import { DeleteConfirmationModal } from "./delete-confirmation-modal"
+import { useState } from "react";
+import Image from "next/image";
+import { Edit, Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
+import { DeleteConfirmationModal } from "./delete-confirmation-modal";
+import { useSession } from "next-auth/react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface Product {
-  _id: string
-  title: string
-  price: number
-  quantity: string
-  createdAt: string
-  thumbnail: string | null
-  code: string
-  status: string
+  _id: string;
+  title: string;
+  price: number;
+  quantity: string;
+  createdAt: string;
+  thumbnail: { url: string } | null;
+  code: string;
+  status: string;
   category: {
-    _id: string
-    name: string
-  }
+    _id: string;
+    name: string;
+  };
 }
 
 interface PendingProductsListProps {
-  onEdit: (productId: string) => void
+  onEdit: (productId: string) => void;
 }
 
 export function PendingProductsList({ onEdit }: PendingProductsListProps) {
-  const [products, setProducts] = useState<Product[]>([])
-  const [loading, setLoading] = useState(true)
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false)
-  const [productToDelete, setProductToDelete] = useState<string | null>(null)
-  const [deleting, setDeleting] = useState(false)
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [productToDelete, setProductToDelete] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
-  const fetchProducts = async () => {
-    try {
-      setLoading(true)
-      const response = await fetch("https://gman54-backend.onrender.com/api/v1/seller/pending-products", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`, // Adjust based on your auth implementation
-          "Content-Type": "application/json",
-        },
-      })
+  const session = useSession();
+  const token = session.data?.accessToken;
 
-      if (!response.ok) {
-        throw new Error("Failed to fetch products")
-      }
+  // Fetch products
+  const { data: products, isLoading } = useQuery<Product[]>({
+    queryKey: ["pendingProducts"],
+    queryFn: async () => {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/seller/pending-products`,	
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) throw new Error("Failed to fetch products");
+      const data = await response.json();
+      return data.success ? data.data : [];
+    },
+    enabled: !!session?.data?.accessToken,
+  });
 
-      const data = await response.json()
-      if (data.success) {
-        setProducts(data.data || [])
-      }
-    } catch {
-      toast.error("Error fetching products")
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  useEffect(() => {
-    fetchProducts()
-  }, [])
+  // Delete mutation
+  const deleteMutation = useMutation({
+    mutationFn: async (productId: string) => {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/seller/products/${productId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) throw new Error("Failed to delete product");
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["pendingProducts"] });
+      toast.success("Product deleted successfully");
+      setDeleteModalOpen(false);
+      setProductToDelete(null);
+    },
+    onError: () => {
+      toast.error("Error deleting product");
+    },
+  });
 
   const handleDeleteClick = (productId: string) => {
-    setProductToDelete(productId)
-    setDeleteModalOpen(true)
-  }
+    setProductToDelete(productId);
+    setDeleteModalOpen(true);
+  };
 
-  const handleDeleteConfirm = async () => {
-    if (!productToDelete) return
-
-    try {
-      setDeleting(true)
-      const response = await fetch(`https://gman54-backend.onrender.com/api/v1/seller/products/${productToDelete}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-          "Content-Type": "application/json",
-        },
-      })
-
-      if (!response.ok) {
-        throw new Error("Failed to delete product")
-      }
-
-      // Remove the product from the list
-      setProducts(products.filter((product) => product._id !== productToDelete))
-
-      toast.success("Product deleted successfully")
-    } catch (error) {
-      console.error("Error deleting product:", error)
-      toast.error("Error deleting product")
-    } finally {
-      setDeleting(false)
-      setDeleteModalOpen(false)
-      setProductToDelete(null)
+  const handleDeleteConfirm = () => {
+    if (productToDelete) {
+      deleteMutation.mutate(productToDelete);
     }
-  }
+  };
 
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
+    const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
       month: "2-digit",
       day: "2-digit",
@@ -110,10 +112,10 @@ export function PendingProductsList({ onEdit }: PendingProductsListProps) {
       hour: "2-digit",
       minute: "2-digit",
       hour12: true,
-    })
-  }
+    });
+  };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <Card>
         <CardContent className="p-6">
@@ -122,17 +124,19 @@ export function PendingProductsList({ onEdit }: PendingProductsListProps) {
           </div>
         </CardContent>
       </Card>
-    )
+    );
   }
 
-  if (products.length === 0) {
+  if (!products || products.length === 0) {
     return (
       <Card>
         <CardContent className="p-6">
-          <div className="text-center text-muted-foreground">No pending products found.</div>
+          <div className="text-center text-muted-foreground">
+            No pending products found.
+          </div>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   return (
@@ -157,7 +161,10 @@ export function PendingProductsList({ onEdit }: PendingProductsListProps) {
                   <TableCell>
                     <div className="flex items-center gap-3">
                       <Image
-                        src={product.thumbnail || "/placeholder.svg?height=48&width=48"}
+                        src={
+                          product.thumbnail?.url ||
+                          "/placeholder.svg?height=48&width=48"
+                        }
                         alt={product.title}
                         width={48}
                         height={48}
@@ -172,10 +179,18 @@ export function PendingProductsList({ onEdit }: PendingProductsListProps) {
                   <TableCell>{formatDate(product.createdAt)}</TableCell>
                   <TableCell>
                     <div className="flex gap-2">
-                      <Button variant="ghost" size="sm" onClick={() => onEdit(product._id)}>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => onEdit(product._id)}
+                      >
                         <Edit className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="sm" onClick={() => handleDeleteClick(product._id)}>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDeleteClick(product._id)}
+                      >
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
@@ -184,10 +199,13 @@ export function PendingProductsList({ onEdit }: PendingProductsListProps) {
                     <Badge
                       variant="secondary"
                       className={
-                        product.status === "pending" ? "bg-orange-100 text-orange-800" : "bg-green-100 text-green-800"
+                        product.status === "pending"
+                          ? "bg-[#FFA300] text-white"
+                          : "bg-green-100 text-green-800"
                       }
                     >
-                      {product.status.charAt(0).toUpperCase() + product.status.slice(1)}
+                      {product.status.charAt(0).toUpperCase() +
+                        product.status.slice(1)}
                     </Badge>
                   </TableCell>
                 </TableRow>
@@ -201,8 +219,8 @@ export function PendingProductsList({ onEdit }: PendingProductsListProps) {
         open={deleteModalOpen}
         onOpenChange={setDeleteModalOpen}
         onConfirm={handleDeleteConfirm}
-        loading={deleting}
+        loading={deleteMutation.isPending}
       />
     </>
-  )
+  );
 }
