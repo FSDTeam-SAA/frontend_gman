@@ -208,7 +208,7 @@ const updateCartItem = async ({ productId, quantity }: { productId: string; quan
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => handleRemoveItem(item._id)}
+                          onClick={() => handleRemoveItem(item.product._id)}
                           disabled={removeMutation.isPending}
                           className="text-red-600 hover:text-red-800"
                         >
@@ -236,15 +236,7 @@ const updateCartItem = async ({ productId, quantity }: { productId: string; quan
                             <Plus className="h-3 w-3" />
                           </Button>
                         </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleRemoveItem(item._id)}
-                          disabled={removeMutation.isPending}
-                          className="text-red-600 hover:text-red-800 text-sm"
-                        >
-                          Remove
-                        </Button>
+                     
                       </div>
                     </div>
 
@@ -295,7 +287,7 @@ const updateCartItem = async ({ productId, quantity }: { productId: string; quan
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => handleRemoveItem(item._id)}
+                          onClick={() => handleRemoveItem(item.product._id)}
                           disabled={removeMutation.isPending}
                           className="text-red-600 hover:text-red-800"
                         >
