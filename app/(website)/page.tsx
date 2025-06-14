@@ -1,10 +1,9 @@
-import Add_Banner from '@/components/Add_Banner';
+import Add_Banner from "@/components/Add_Banner";
 
-
-import Featured_Farms from '@/components/Featured_Farms';
-import HeroSection from '@/components/Hero';
-import Searchbar from '@/components/Searchbar';
-import React from 'react';
+import Featured_Farms from "@/components/Featured_Farms";
+import HeroSection from "@/components/Hero";
+import Searchbar from "@/components/Searchbar";
+import React from "react";
 
 const Page = () => {
   return (
@@ -16,11 +15,10 @@ const Page = () => {
         </div>
       </div>
       <Featured_Farms />
-      <Add_Banner/>
-       {/* <All_farms/> */}
-
+      <Add_Banner />
+      {/* <All_farms /> */}
     </div>
   );
-}
+};
 
 export default Page;

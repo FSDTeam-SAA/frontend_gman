@@ -1,67 +1,73 @@
-'use client'
-import { Search, MapPin } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { useQuery } from "@tanstack/react-query"
-import { useSession } from "next-auth/react"
+"use client";
+import { Search, MapPin } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useQuery } from "@tanstack/react-query";
+import { useSession } from "next-auth/react";
 
 // Define TypeScript interfaces for the API response
 interface Category {
-  _id: string
-  name: string
-  description: string
-  createdAt: string
-  updatedAt: string
-  __v: number
+  _id: string;
+  name: string;
+  description: string;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
 }
 
 interface ApiResponse {
-  success: boolean
+  success: boolean;
   data: {
-    categories: Category[]
+    categories: Category[];
     pagination: {
-      total: number
-      page: number
-      limit: number
-      totalPage: number
-    }
-  }
+      total: number;
+      page: number;
+      limit: number;
+      totalPage: number;
+    };
+  };
 }
-
-
-
 
 export default function Searchbar() {
- const session = useSession();
-  const token = session?.data?.accessToken
-  console.log(token)
+  const session = useSession();
+  const token = session?.data?.accessToken;
+  console.log(token);
+  console.log(session);
   const fetchCategories = async (): Promise<Category[]> => {
- 
-  if (!token) {
-    throw new Error("No authentication token found")
-  }
+    if (!token) {
+      throw new Error("No authentication token found");
+    }
 
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/categories`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  })
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/admin/categories`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
-  if (!response.ok) {
-    throw new Error("Failed to fetch categories")
-  }
+    if (!response.ok) {
+      throw new Error("Failed to fetch categories");
+    }
 
-  const data: ApiResponse = await response.json()
-  return data.data.categories
-}
+    const data: ApiResponse = await response.json();
+    return data.data.categories;
+  };
   const { data: categories = [], isLoading } = useQuery<Category[], Error>({
     queryKey: ["categories"],
     queryFn: fetchCategories,
-  })
-  console.log(categories)
+  });
+  console.log(categories);
 
   return (
     <div className="max-w-5xl px-2 sm:px-4 md:px-6 lg:px-8">
@@ -70,7 +76,7 @@ export default function Searchbar() {
           {/* Where Section */}
           <div className="flex-1 sm:border-r sm:border-gray-200 sm:pr-3 md:pr-4 lg:pr-6">
             <div className="space-y-1 sm:space-y-1.5">
-              <label className="text-xs sm:text-sm font-semibold text-gray-900 uppercase sm:normal-case tracking-wide sm:tracking-normal hidden lg:block">
+              <label className="text-xs sm:text-sm font-semibold text-gray-900 uppercase sm:normal-case tracking-wide sm:tracking-normal hidden lg:block ml-4">
                 Where
               </label>
               <div className="relative">
@@ -124,5 +130,5 @@ export default function Searchbar() {
         </div>
       </div>
     </div>
-  )
+  );
 }
