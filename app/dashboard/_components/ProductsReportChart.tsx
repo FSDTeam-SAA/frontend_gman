@@ -1,24 +1,86 @@
 "use client";
 
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, TooltipProps } from "recharts";
 import * as Tabs from "@radix-ui/react-tabs";
+import { useSession } from "next-auth/react";
 
-// Detailed dummy data for product reports
-const data = [
-  { name: "This Day", value: 30, color: "#8b5cf6", products: 2 },
-  { name: "This Week", value: 60, color: "#0d9488", products: 5 },
-  { name: "This Month", value: 85, color: "#22c55e", products: 8 },
-];
+// Define interfaces for API response and chart data
+interface ReportItem {
+  date: string;
+  count: number;
+}
 
-// Custom tooltip component for the pie chart
-// eslint-disable-next-line
-const CustomTooltip = ({ active, payload }: any) => {
+interface ApiResponse {
+  success: boolean;
+  data: {
+    report: ReportItem[];
+    userId: string;
+  };
+}
+
+interface ChartData {
+  name: string;
+  value: number;
+  color: string;
+  products: number;
+}
+
+// Fetch data from API
+const fetchProductsReport = async (range: string, token: string | undefined): Promise<ReportItem[]> => {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/seller/new-products-report?period=${range}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch products report");
+  }
+
+  const data: ApiResponse = await response.json();
+  if (!data.success) {
+    throw new Error("API request was not successful");
+  }
+
+  return data.data.report;
+};
+
+// Transform API data to match PieChart format
+const transformData = (report: ReportItem[]): ChartData[] => {
+  const today = new Date();
+  const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+  const monthAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+  const todayCount = report
+    .filter((item) => new Date(item.date).toDateString() === today.toDateString())
+    .reduce((sum, item) => sum + item.count, 0);
+
+  const weekCount = report
+    .filter((item) => new Date(item.date) >= weekAgo)
+    .reduce((sum, item) => sum + item.count, 0);
+
+  const monthCount = report
+    .filter((item) => new Date(item.date) >= monthAgo)
+    .reduce((sum, item) => sum + item.count, 0);
+
+  return [
+    { name: "This Day", value: todayCount, color: "#8b5cf6", products: todayCount },
+    { name: "This Week", value: weekCount, color: "#0d9488", products: weekCount },
+    { name: "This Month", value: monthCount, color: "#22c55e", products: monthCount },
+  ];
+};
+
+// Custom tooltip component with proper types
+const CustomTooltip = ({ active, payload }: TooltipProps<number, string>) => {
   if (active && payload && payload.length) {
+    const data = payload[0].payload as ChartData;
     return (
       <div className="bg-white p-2 border border-gray-200 rounded shadow-sm">
-        <p className="font-medium">{payload[0].name}</p>
-        <p className="text-sm">Products: {payload[0].payload.products}</p>
-        <p className="text-sm">Completion: {payload[0].value}%</p>
+        <p className="font-medium">{data.name}</p>
+        <p className="text-sm">Products: {data.products}</p>
+        <p className="text-sm">Completion: {data.value}</p>
       </div>
     );
   }
@@ -26,13 +88,41 @@ const CustomTooltip = ({ active, payload }: any) => {
 };
 
 export default function ProductsReportChart() {
+  const [view, setView] = useState<"day" | "week" | "month" | "year">("month");
+  const { data: session } = useSession();
+  const token = session?.accessToken;
+
+  const { data: reportData, isLoading, error } = useQuery<ReportItem[], Error>({
+    queryKey: ["productsReport", view],
+    queryFn: () => fetchProductsReport(view, token),
+    enabled: !!token, // Only fetch if token exists
+  });
+
+  if (isLoading) {
+    return <div className="p-6 bg-white">Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="p-6 bg-white">Error: {error.message}</div>;
+  }
+
+  if (!reportData) {
+    return <div className="p-6 bg-white">No data available</div>;
+  }
+
+  const data = transformData(reportData);
+
   return (
     <div className="p-6 bg-white">
       <div className="grid grid-cols-6 gap-8">
         <div className="col-span-4 space-y-2">
           <h3 className="font-medium text-lg">Total New Products Report</h3>
 
-          <Tabs.Root defaultValue="month" className="">
+          <Tabs.Root
+            value={view}
+            onValueChange={(value) => setView(value as "day" | "week" | "month" | "year")}
+            className=""
+          >
             <Tabs.List className="bg-slate-100 rounded-md grid grid-cols-4 gap-4 p-1">
               <Tabs.Trigger
                 value="day"
@@ -121,7 +211,7 @@ export default function ProductsReportChart() {
             <Pie
               data={[
                 { ...data[0], name: data[0].name, products: data[0].products },
-                { value: 100 - data[0].value, name: "Remaining", products: 0 },
+                { value: Math.max(100 - data[0].value, 0), name: "Remaining", products: 0 },
               ]}
               cx="50%"
               cy="50%"
@@ -139,7 +229,7 @@ export default function ProductsReportChart() {
             <Pie
               data={[
                 { ...data[1], name: data[1].name, products: data[1].products },
-                { value: 100 - data[1].value, name: "Remaining", products: 0 },
+                { value: Math.max(100 - data[1].value, 0), name: "Remaining", products: 0 },
               ]}
               cx="50%"
               cy="50%"
@@ -157,7 +247,7 @@ export default function ProductsReportChart() {
             <Pie
               data={[
                 { ...data[2], name: data[2].name, products: data[2].products },
-                { value: 100 - data[2].value, name: "Remaining", products: 0 },
+                { value: Math.max(100 - data[2].value, 0), name: "Remaining", products: 0 },
               ]}
               cx="50%"
               cy="50%"
