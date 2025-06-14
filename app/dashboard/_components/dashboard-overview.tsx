@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from "react"
 import { DashboardStats } from "./dashboard-stats"
-import { SellReportChart } from "./sell-report-chart"
-import { ProductsReportChart } from "./products-report-chart"
+
+
+import SellReportChart from "./SellReportChart"
 
 interface DashboardData {
   totalSales: number
@@ -57,7 +58,7 @@ export function DashboardOverview() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <SellReportChart />
-        <ProductsReportChart />
+       
       </div>
     </div>
   )
