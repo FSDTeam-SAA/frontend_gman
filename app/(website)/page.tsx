@@ -1,8 +1,10 @@
 
+
 import Featured_Farms from '@/components/Featured_Farms';
 import HeroSection from '@/components/Hero';
 import Searchbar from '@/components/Searchbar';
 import React, { Suspense } from 'react';
+
 
 const Page = () => {
   return (
@@ -13,14 +15,16 @@ const Page = () => {
           <Searchbar />
         </div>
       </div>
+
     <Suspense fallback={<div>Loading...</div>}>
         <Featured_Farms />
       </Suspense>
       {/* <Add_Banner/> */}
        {/* <All_farms/> */}
 
+
     </div>
   );
-}
+};
 
 export default Page;
