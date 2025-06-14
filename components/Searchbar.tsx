@@ -1,67 +1,98 @@
-'use client'
-import { Search, MapPin } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { useQuery } from "@tanstack/react-query"
-import { useSession } from "next-auth/react"
+"use client";
+import { Search, MapPin } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useQuery } from "@tanstack/react-query";
+import { useSession } from "next-auth/react";
+import { useState } from "react";
+
 
 // Define TypeScript interfaces for the API response
 interface Category {
-  _id: string
-  name: string
-  description: string
-  createdAt: string
-  updatedAt: string
-  __v: number
+  _id: string;
+  name: string;
+  description: string;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
 }
 
 interface ApiResponse {
-  success: boolean
+  success: boolean;
   data: {
-    categories: Category[]
+    categories: Category[];
     pagination: {
-      total: number
-      page: number
-      limit: number
-      totalPage: number
-    }
-  }
+      total: number;
+      page: number;
+      limit: number;
+      totalPage: number;
+    };
+  };
 }
-
-
-
 
 export default function Searchbar() {
- const session = useSession();
-  const token = session?.data?.accessToken
-  console.log(token)
-  const fetchCategories = async (): Promise<Category[]> => {
+  const session = useSession();
+  const token = session?.data?.accessToken;
  
-  if (!token) {
-    throw new Error("No authentication token found")
-  }
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
 
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/categories`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  })
+  const fetchCategories = async (): Promise<Category[]> => {
+    if (!token) {
+      throw new Error("No authentication token found");
+    }
 
-  if (!response.ok) {
-    throw new Error("Failed to fetch categories")
-  }
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/admin/categories`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
-  const data: ApiResponse = await response.json()
-  return data.data.categories
-}
+    if (!response.ok) {
+      throw new Error("Failed to fetch categories");
+    }
+
+    const data: ApiResponse = await response.json();
+    return data.data.categories;
+  };
+
   const { data: categories = [], isLoading } = useQuery<Category[], Error>({
     queryKey: ["categories"],
     queryFn: fetchCategories,
-  })
-  console.log(categories)
+  });
+
+  const handleSearch = () => {
+    const params = new URLSearchParams();
+
+    if (searchQuery) {
+      params.set("search", searchQuery);
+    }
+    if (selectedCategory !== "all") {
+      params.set("category", selectedCategory);
+    }
+
+    const newUrl = `${window.location.pathname}?${params.toString()}`;
+    window.history.pushState(null, "", newUrl);
+  };
+
+  // Handle Enter key press
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  };
 
   return (
     <div className="max-w-5xl px-2 sm:px-4 md:px-6 lg:px-8">
@@ -78,6 +109,9 @@ export default function Searchbar() {
                 <Input
                   type="text"
                   placeholder="Search destinations"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={handleKeyDown} // Add onKeyDown handler
                   className="pl-7 sm:pl-10 md:pl-12 border-0 text-gray-600 placeholder:text-gray-400 focus-visible:ring-0 focus-visible:ring-offset-0 text-xs sm:text-sm md:text-base h-9 sm:h-10 md:h-12 w-full"
                 />
               </div>
@@ -86,15 +120,18 @@ export default function Searchbar() {
 
           {/* Filter Section */}
           <div className="flex-1 sm:pl-3 md:pl-4 lg:pl-6">
-            <div className="space-y-1 sm:space-y-1.5 ">
+            <div className="space-y-1 sm:space-y-1.5">
               <label className="text-xs sm:text-sm font-semibold text-gray-900 hidden lg:block uppercase sm:normal-case tracking-wide sm:tracking-normal">
                 Category
               </label>
-              <Select defaultValue="all">
+              <Select
+                value={selectedCategory}
+                onValueChange={(value) => setSelectedCategory(value)}
+              >
                 <SelectTrigger className="border-0 focus:ring-0 focus:ring-offset-0 bg-transparent text-xs sm:text-sm md:text-base h-9 sm:h-10 md:h-12 w-full cursor-pointer">
-                  <SelectValue />
+                  <SelectValue placeholder="All" />
                 </SelectTrigger>
-                <SelectContent className="">
+                <SelectContent>
                   <SelectItem value="all">All</SelectItem>
                   {isLoading ? (
                     <SelectItem value="loading" disabled>
@@ -102,7 +139,7 @@ export default function Searchbar() {
                     </SelectItem>
                   ) : (
                     categories.map((category) => (
-                      <SelectItem key={category._id} value={category._id}>
+                      <SelectItem key={category._id} value={category.name}>
                         {category.name}
                       </SelectItem>
                     ))
@@ -116,6 +153,7 @@ export default function Searchbar() {
           <div className="flex items-end pb-0 sm:pb-1">
             <Button
               size="icon"
+              onClick={handleSearch}
               className="bg-green-500 hover:bg-green-600 rounded-full w-9 h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 shadow-lg transition-all duration-200 hover:shadow-xl hover:scale-105 flex items-center justify-center"
             >
               <Search className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 lg:w-6 lg:h-6 text-white" />
@@ -124,5 +162,5 @@ export default function Searchbar() {
         </div>
       </div>
     </div>
-  )
+  );
 }

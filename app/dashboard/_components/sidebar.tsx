@@ -107,7 +107,7 @@ export function DashboardSidebar() {
       <SidebarFooter className="p- !bg-[#014A14]">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton className="text-white hover:bg-green-600">
+            <SidebarMenuButton className="text-white hover:bg-green-600 h-[50px] hover:text-white font-normal text-[18px] my-4 cursor-pointer">
               <LogOut className="h-4 w-4" />
               <span>Log Out</span>
             </SidebarMenuButton>
