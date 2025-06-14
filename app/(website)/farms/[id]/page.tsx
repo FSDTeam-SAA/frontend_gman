@@ -1,70 +1,126 @@
-"use client"
+"use client";
 
-import Image from "next/image"
-import { Heart, MapPin, Star, MessageCircle, Clock6 } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import PageHeader from "@/components/sheard/PageHeader"
-import { useState } from "react"
-import Link from "next/link"
-import { useQuery } from "@tanstack/react-query"
-import { useParams } from "next/navigation"
+import Image from "next/image";
+import { Heart, MapPin, Star, MessageCircle, Clock6 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import PageHeader from "@/components/sheard/PageHeader";
+import { useState } from "react";
+import Link from "next/link";
+import { useQuery } from "@tanstack/react-query";
+import { useParams } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
+import { toast } from "sonner";
 
 interface Product {
-  _id: string
-  title: string
-  thumbnail?: { url: string }
-  price: number
-  quantity: string
-  review: { rating: number; user: string; text: string; _id: string }[]
-  status: string
+  _id: string;
+  title: string;
+  thumbnail?: { url: string };
+  price: number;
+  quantity: string;
+  review: { rating: number; user: string; text: string; _id: string }[];
+  status: string;
 }
 
 interface Farm {
-  _id: string
-  name: string
-  isOrganic: boolean
-  description: string
-  images?: { url: string; public_id: string; _id: string }[]
+  _id: string;
+  name: string;
+  isOrganic: boolean;
+  description: string;
+  images?: { url: string; public_id: string; _id: string }[];
   location: {
-    city: string
-    state: string
-  }
-  rating: number
+    city: string;
+    state: string;
+  };
+  rating: number;
 }
 
+const BASE_URL = "http://localhost:8001/api/v1";
+
+// interface StartChatButtonProps {
+//   farmId: string;
+//   farmName?: string;
+// }
+
 interface ApiResponse {
-  success: boolean
-  message: string
+  success: boolean;
+  message: string;
   data: {
-    farm: Farm
-    product: Product[]
-  }
+    farm: Farm;
+    product: Product[];
+  };
 }
 
 export default function FarmPage() {
-  const [favorites, setFavorites] = useState<string[]>([])
-  const params = useParams()
-  const farmId = params.id as string
+  const [favorites, setFavorites] = useState<string[]>([]);
+  const params = useParams();
+  const farmId = params.id as string;
+  const { data: session } = useSession();
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+
+  const token = session?.accessToken;
+
+  console.log(token, "token");
 
   const toggleFavorite = (productId: string) => {
     setFavorites((prev) =>
       prev.includes(productId)
         ? prev.filter((id) => id !== productId)
         : [...prev, productId]
-    )
-  }
+    );
+  };
 
   const { data, isLoading, error } = useQuery<ApiResponse>({
     queryKey: ["farm", farmId],
     queryFn: async () => {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/farm/${farmId}`)
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/user/farm/${farmId}`
+      );
       if (!response.ok) {
-        throw new Error("Failed to fetch farm data")
+        throw new Error("Failed to fetch farm data");
       }
-      return response.json()
+      return response.json();
     },
-  })
+  });
+
+  const handleStartChat = async () => {
+    if (!token) {
+      toast.error("Please login to start a chat");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const response = await fetch(`${BASE_URL}/chat/create-chat`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          farmId,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        // Redirect to the chat page with the chat ID
+        router.push(`/messages/${data.data._id}`);
+        toast.success("Chat created successfully");
+      } else {
+        throw new Error(data.message || "Failed to create chat");
+      }
+    } catch (error) {
+      console.error("Error creating chat:", error);
+      toast("Failed to start chat. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -85,44 +141,60 @@ export default function FarmPage() {
           </div>
           {/* Skeleton for Products */}
           <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 sm:gap-4 lg:gap-6 gap-y-10">
-            {Array(6).fill(0).map((_, index) => (
-              <div key={index} className="space-y-3">
-                <div className="aspect-square bg-gray-200 rounded-lg"></div>
-                <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-                <div className="h-4 bg-gray-200 rounded w-1/3"></div>
-              </div>
-            ))}
+            {Array(6)
+              .fill(0)
+              .map((_, index) => (
+                <div key={index} className="space-y-3">
+                  <div className="aspect-square bg-gray-200 rounded-lg"></div>
+                  <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                  <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                  <div className="h-4 bg-gray-200 rounded w-1/3"></div>
+                </div>
+              ))}
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   if (error || !data?.success) {
-    return <div className="min-h-screen flex items-center justify-center">Error loading farm data</div>
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        Error loading farm data
+      </div>
+    );
   }
 
-  const farm = data.data.farm
-  const products = data.data.product
+  const farm = data.data.farm;
+  const products = data.data.product;
 
   // Calculate average rating for the farm based on product reviews
-  const averageRating = products.length > 0
-    ? products.reduce((acc, product) => {
-        const productAvg = product.review.length > 0
-          ? product.review.reduce((sum, review) => sum + review.rating, 0) / product.review.length
-          : 0
-        return acc + productAvg
-      }, 0) / products.length
-    : 0
+  const averageRating =
+    products.length > 0
+      ? products.reduce((acc, product) => {
+          const productAvg =
+            product.review.length > 0
+              ? product.review.reduce((sum, review) => sum + review.rating, 0) /
+                product.review.length
+              : 0;
+          return acc + productAvg;
+        }, 0) / products.length
+      : 0;
 
-  const totalReviews = products.reduce((acc, product) => acc + product.review.length, 0)
+  const totalReviews = products.reduce(
+    (acc, product) => acc + product.review.length,
+    0
+  );
 
   return (
     <div className="min-h-screen">
       {/* Page Header */}
       <PageHeader
-        imge={farm.images && farm.images.length > 0 ? farm.images[0].url : "/asset/framheader.jpg"}
+        imge={
+          farm.images && farm.images.length > 0
+            ? farm.images[0].url
+            : "/asset/framheader.jpg"
+        }
         titile={farm.name}
         subtitle={farm.description}
       />
@@ -135,7 +207,11 @@ export default function FarmPage() {
             <div className="flex items-start gap-4 flex-1">
               <div className="w-16 h-16 sm:w-20 sm:h-20 lg:w-[80px] lg:h-[80px] rounded-full overflow-hidden flex-shrink-0">
                 <Image
-                  src={farm.images && farm.images.length > 0 ? farm.images[0].url : "/asset/profile1.png"}
+                  src={
+                    farm.images && farm.images.length > 0
+                      ? farm.images[0].url
+                      : "/asset/profile1.png"
+                  }
                   alt={`${farm.name} profile`}
                   width={80}
                   height={80}
@@ -146,14 +222,14 @@ export default function FarmPage() {
                 <h1 className="text-lg sm:text-xl lg:text-[18px] font-semibold text-[#272727] mb-2">
                   {farm.name}
                 </h1>
-              {farm.isOrganic && (
+                {farm.isOrganic && (
                   <div className="flex items-center gap-2 mb-2">
-                  <Clock6 className="w-3 h-3 sm:w-4 sm:h-4 text-[#039B06] flex-shrink-0" />
-                  <span className="text-xs sm:text-sm text-[#039B06] font-normal">
-                    This farm produces organic products
-                  </span>
-                </div>
-              )}
+                    <Clock6 className="w-3 h-3 sm:w-4 sm:h-4 text-[#039B06] flex-shrink-0" />
+                    <span className="text-xs sm:text-sm text-[#039B06] font-normal">
+                      This farm produces organic products
+                    </span>
+                  </div>
+                )}
                 <div className="flex items-center gap-1 text-gray-600">
                   <MapPin className="w-3 h-3 sm:w-4 sm:h-4 text-[#039B06] flex-shrink-0" />
                   <span className="text-sm sm:text-base font-normal text-[#595959]">
@@ -176,15 +252,19 @@ export default function FarmPage() {
                   <span className="font-semibold text-[#000000]">
                     {averageRating.toFixed(1)}
                   </span>
-                  <span className="text-sm text-[#272727]">({totalReviews})</span>
+                  <span className="text-sm text-[#272727]">
+                    ({totalReviews})
+                  </span>
                 </div>
               </div>
-            <Link href={"/messages"} className="text-sm text-[#039B06] hover:underline">
-              <Button className="bg-[#039B06] hover:bg-[#039B06]/80 text-white rounded-[4px] w-full sm:w-auto cursor-pointer text-sm sm:text-base px-4 py-2">
+              <Button
+                onClick={handleStartChat}
+                disabled={loading}
+                className="bg-[#039B06] hover:bg-[#039B06]/80 text-white rounded-[4px] w-full sm:w-auto cursor-pointer text-sm sm:text-base px-4 py-2"
+              >
                 <MessageCircle className="w-4 h-4 mr-2" />
-                Message Farmer
+                {loading ? "Starting Message..." : "Message Farmer"}
               </Button>
-            </Link>
             </div>
           </div>
         </div>
@@ -202,7 +282,10 @@ export default function FarmPage() {
           ) : (
             <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 sm:gap-4 lg:gap-6 gap-y-10">
               {products.map((product) => (
-                <Link key={product._id} href={`/product-details/${product._id}`}>
+                <Link
+                  key={product._id}
+                  href={`/product-details/${product._id}`}
+                >
                   <div className="group cursor-pointer relative overflow-hidden">
                     <div className="relative">
                       <div className="aspect-square overflow-hidden rounded-lg">
@@ -216,16 +299,20 @@ export default function FarmPage() {
                       </div>
                       <button
                         onClick={(e) => {
-                          e.preventDefault()
-                          toggleFavorite(product._id)
+                          e.preventDefault();
+                          toggleFavorite(product._id);
                         }}
                         className={`absolute top-2 sm:top-3 right-2 sm:right-3 p-1.5 sm:p-2 rounded-full transition-colors ${
-                          favorites.includes(product._id) ? "bg-black border-2 border-white" : "bg-white/80 hover:bg-white"
+                          favorites.includes(product._id)
+                            ? "bg-black border-2 border-white"
+                            : "bg-white/80 hover:bg-white"
                         }`}
                       >
                         <Heart
                           className={`w-3 h-3 sm:w-4 sm:h-4 transition-colors ${
-                            favorites.includes(product._id) ? "text-white fill-white" : "text-gray-600 hover:text-red-500"
+                            favorites.includes(product._id)
+                              ? "text-white fill-white"
+                              : "text-gray-600 hover:text-red-500"
                           }`}
                         />
                       </button>
@@ -254,7 +341,12 @@ export default function FarmPage() {
                         <div className="flex items-center gap-1">
                           <Star className="w-3 h-3 sm:w-4 sm:h-4 fill-[#FACC15] text-[#FACC15]" />
                           <span className="text-xs sm:text-sm font-medium text-gray-900">
-                            {(product.review.reduce((acc, r) => acc + r.rating, 0) / product.review.length || 0).toFixed(1)}
+                            {(
+                              product.review.reduce(
+                                (acc, r) => acc + r.rating,
+                                0
+                              ) / product.review.length || 0
+                            ).toFixed(1)}
                           </span>
                           <span className="text-xs sm:text-sm text-gray-600">
                             ({product.review.length})
@@ -270,5 +362,5 @@ export default function FarmPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }
