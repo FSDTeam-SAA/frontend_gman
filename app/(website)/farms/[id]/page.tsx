@@ -36,7 +36,7 @@ interface Farm {
   rating: number;
 }
 
-const BASE_URL = "http://localhost:8001/api/v1";
+const BASE_URL = `${process.env.NEXT_PUBLIC_API_URL}`;
 
 // interface StartChatButtonProps {
 //   farmId: string;
