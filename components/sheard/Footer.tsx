@@ -3,62 +3,90 @@
 import Link from "next/link"
 import Image from "next/image"
 import { Facebook, Instagram, Twitter } from "lucide-react"
+import { usePathname, useRouter } from "next/navigation"
+import { useSession } from "next-auth/react"
 
 export function Footer() {
-  const navLinks = [
-    { name: "Work", href: "/#work" },
-    { name: "About", href: "/#about" },
-    { name: "Process", href: "/#process" },
-    { name: "Contact", href: "/#contact" },
+  const pathname = usePathname()
+  const router = useRouter()
+  const { data: session, status } = useSession()
+
+  const isLoggedIn = status === "authenticated"
+  const userRole = session?.user?.role || null
+
+  const quickLinks = [
+    { name: "About Us", href: "/about" },
+    { name: "Mission", href: "/mission" },
+    { name: "Become a Seller", href: "/become-seller" },
+    { name: "Blog", href: "/blog" },
+  ].filter(link => link.href !== "/become-seller" || !isLoggedIn || userRole !== "seller")
+
+  const customerServiceLinks = [
+    { name: "FAQs", href: "/faq" },
+    { name: "Contact Us", href: "/contact" },
+    { name: "Privacy Policy", href: "/privacy" },
+    { name: "Terms & Conditions", href: "/terms" },
   ]
 
-  const contactLinks = [
-    { name: "Email", href: "mailto:hello@studiosignal.dev", label: "hello@studiosignal.dev" },
-    { name: "Location", href: "/#contact", label: "Remote, global" },
-    { name: "Availability", href: "/#contact", label: "Limited monthly slots" },
-  ]
+  const isActive = (href: string) => pathname === href || pathname.startsWith(href)
+
+  const handleBecomeSellerClick = (e: React.MouseEvent, href: string) => {
+    e.preventDefault()
+    if (!isLoggedIn) {
+      router.push("/login")
+    } else {
+      router.push(href)
+    }
+  }
 
   return (
     <footer className="bg-white border-t mt-16">
-      <div className="max-w-6xl mx-auto px-6 sm:px-10 py-12">
+      <div className="max-w-7xl mx-auto px-6 sm:px-10 py-12">
         <div className="grid gap-10 md:grid-cols-3">
+          {/* Logo and Socials */}
           <div>
             <Link href="/" className="flex items-center gap-3 mb-4">
               <Image
-                src="/asset/portfolio-logo.svg"
+                src="/asset/logo.png"
                 width={40}
-                height={40}
-                alt="Studio Signal logo"
-                className="h-10 w-10"
+                height={53}
+                alt="Table Fresh Logo"
+                className="h-[53px] w-[40px]"
                 priority
               />
               <div className="leading-5">
-                <h1 className="text-lg font-semibold tracking-[0.3em] text-[#0F172A]">STUDIO</h1>
-                <p className="text-[#F97316] font-semibold text-lg -mt-1 tracking-[0.3em]">SIGNAL</p>
-                <span className="text-[10px] text-gray-500 block uppercase tracking-[0.25em]">
-                  Product + Frontend
-                </span>
+                <h1 className="text-xl font-bold text-black">TABLE</h1>
+                <p className="text-[#039B06] font-semibold text-lg -mt-1">FRESH</p>
+                <span className="text-[10px] text-gray-500 block">Fresh & Healthy</span>
               </div>
             </Link>
-            <p className="text-sm text-[#475569] leading-relaxed max-w-xs">
-              A quiet place for bold interfaces, thoughtful systems, and NDA-safe stories.
-            </p>
 
             <div className="flex gap-4 mt-4">
               {[{ Icon: Facebook }, { Icon: Instagram }, { Icon: Twitter }].map(({ Icon }, i) => (
-                <Link key={i} href="#" className="text-gray-500 hover:text-[#F97316] transition-colors">
+                <Link key={i} href="#" className="text-gray-500 hover:text-[#039B06] transition-colors">
                   <Icon className="h-5 w-5" />
                 </Link>
               ))}
             </div>
           </div>
 
+          {/* Quick Links */}
           <div>
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">Sections</h3>
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">Quick Links</h3>
             <ul className="space-y-3">
-              {navLinks.map((link) => (
+              {quickLinks.map((link) => (
                 <li key={link.name}>
-                  <Link href={link.href} className="text-sm transition font-medium text-gray-700 hover:text-[#F97316]">
+                  <Link
+                    href={link.href}
+                    onClick={(e) =>
+                      link.href === "/become-seller" ? handleBecomeSellerClick(e, link.href) : null
+                    }
+                    className={`text-sm transition font-medium ${
+                      isActive(link.href)
+                        ? "text-[#039B06]"
+                        : "text-gray-700 hover:text-[#039B06]"
+                    }`}
+                  >
                     {link.name}
                   </Link>
                 </li>
@@ -66,22 +94,31 @@ export function Footer() {
             </ul>
           </div>
 
+          {/* Customer Service */}
           <div>
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">Contact</h3>
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">Customer Service</h3>
             <ul className="space-y-3">
-              {contactLinks.map((link) => (
+              {customerServiceLinks.map((link) => (
                 <li key={link.name}>
-                  <a href={link.href} className="text-sm transition font-medium text-gray-700 hover:text-[#F97316]">
-                    {link.label}
-                  </a>
+                  <Link
+                    href={link.href}
+                    className={`text-sm transition font-medium ${
+                      isActive(link.href)
+                        ? "text-[#039B06]"
+                        : "text-gray-700 hover:text-[#039B06]"
+                    }`}
+                  >
+                    {link.name}
+                  </Link>
                 </li>
               ))}
             </ul>
           </div>
         </div>
 
+        {/* Bottom Line */}
         <div className="mt-10 border-t pt-6 text-center text-sm text-gray-500">
-          (c) {new Date().getFullYear()} <strong>Studio Signal</strong>. All rights reserved.
+          © {new Date().getFullYear()} <strong>TABLE FRESH</strong>. All rights reserved.
         </div>
       </div>
     </footer>

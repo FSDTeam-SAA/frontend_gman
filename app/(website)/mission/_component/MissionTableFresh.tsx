@@ -112,7 +112,7 @@ export default function MissionTableFresh() {
           {/* Left Content */}
           <div className="space-y-4 md:space-y-6 order-2 lg:order-1">
             <h2 className="text-xl sm:text-2xl lg:text-[32px] font-semibold text-[#272727] mb-2 md:mb-4 leading-tight">
-              Studio Signal Mission
+              Table Fresh Mission
             </h2>
             <div className="space-y-3 md:space-y-4">
               <p className="text-[#595959] text-sm sm:text-base font-normal leading-[150%]">
@@ -125,7 +125,7 @@ export default function MissionTableFresh() {
                 home processors. Home bakers and their artisan breads and baked goods. Cooks and caterers.
               </p>
               <p className="text-[#595959] text-sm sm:text-base font-normal leading-[150%]">
-                Let Studio Signal serve as the platform to launch your next product story, local or global. Taking
+                Let Table Fresh serve as the platform to launch you own small food business, local and healthy. Taking
                 control from the government and corporations and putting it back in the hands of the people, where it
                 belongs!
               </p>

@@ -7,8 +7,8 @@ const page = () => {
     <div>
       <PageHeader
         image="/asset/whyJoin.png"
-        title="Why work with Studio Signal"
-        gradientColor="249, 115, 22"
+        title="Join the Food Revolution with Tablefresh"
+        gradientColor="0, 115, 2"
         gradientOpacity={0.0}
       />
       <Reasons />

@@ -5,27 +5,27 @@ export default function Reasons() {
   const features = [
     {
       icon: "/asset/why_join1.png",
-      title: "Narrative First",
+      title: "It's Free",
       description:
-        "Each project is documented as a clear story: problem, intent, and the interface decisions that followed.",
+        "Sourcing fresh, locally grown produce and food that is healthy and nutritious is foundational to a healthy family.",
     },
     {
       icon: "/asset/why_join2.png",
-      title: "NDA-Respectful",
+      title: "Better Nutrition",
       description:
-        "Client work is anonymized and generalized so the thinking can be shared without exposing private details.",
+        "Current farming methods have depleted the soil of important vitamins and trace minerals, negatively affecting your health. Small family farms and gardens don't have this problem.",
     },
     {
       icon: "/asset/why_join3.png",
-      title: "Systems Thinking",
+      title: "Healthier Choices",
       description:
-        "Visual systems, modular components, and reusable patterns keep the work consistent and buildable.",
+        "Many obesity and health problems can be attributed to industrial agriculture's use of synthetic fertilizers, pesticides, herbicides and cancer causing glyphosate.",
     },
     {
       icon: "/asset/why_join4.png",
-      title: "Designed to Evolve",
+      title: "Grow Your Business",
       description:
-        "The archive is updated with new experiments and case studies so the portfolio stays current.",
+        "Tablefresh is more than just a platform to find fresh foods. With tablefresh, you can create, expand and grow your business.",
     },
   ]
 
@@ -33,7 +33,7 @@ export default function Reasons() {
     <div className="container mx-auto px-4 py-12 sm:px-6 lg:px-8 md:mt-[100px]">
       <div className=" ">
         <h2 className="text-xl sm:text-[24px] lg:text-[24px] font-bold text-[#272727] ">
-          Reasons to work with Studio Signal.
+          Reasons to join tablefresh.
         </h2>
       </div>
 

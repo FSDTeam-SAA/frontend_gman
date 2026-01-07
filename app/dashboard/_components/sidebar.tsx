@@ -82,22 +82,20 @@ export function DashboardSidebar() {
       <SidebarHeader className="p-4 !bg-[#014A14]">
         <Link href="/" className="flex items-center gap-2">
           <Image
-            src="/asset/portfolio-logo.svg"
+            src="/asset/logo.png"
             width={40}
             height={53}
-            alt="Studio Signal logo"
+            alt="Table Fresh Logo"
             className="h-[53px] w-[40px]"
             priority
           />
-            <div className="flex flex-col">
-              <div className="">
-                <p className="text-[16px] font-semibold text-white">STUDIO</p>
-                <p className="text-[16px] font-normal text-[#F97316]">SIGNAL</p>
-              </div>
-              <span className="text-[6px] font-medium leading-[120%] space-x-[5%] text-[#CBD5F5]">
-                Product + Frontend
-              </span>
+          <div className="flex flex-col">
+            <div className="">
+              <p className="text-[16px] font-semibold text-white">TABLE</p>
+              <p className="text-[16px] font-normal text-[#039B06]">FRESH</p>
             </div>
+            <span className="text-[6px] font-medium leading-[120%] space-x-[5%] text-[#8F8F8F]">Fresh & Healthy</span>
+          </div>
         </Link>
       </SidebarHeader>
 
