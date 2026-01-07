@@ -22,9 +22,8 @@ const AutoModal = ({
         <div className="bg-white p-8 rounded-lg w-[500px] text-center shadow-lg">
           <h2 className="text-[24px] text-[#272727] font-semibold mb-4">Payment and Fees</h2>
           <p className="mb-6 text-[#595959] text-base">
-            Table Fresh is completely free to join and use. The only fees you
-            will ever see are a small credit card fee and a maintenance
-            processing fee to purchase products using the payment system.
+            Studio Signal is free to browse. The only fees you will ever see are
+            standard card processing costs tied to optional paid features.
           </p>
           <button
             onClick={onClose}

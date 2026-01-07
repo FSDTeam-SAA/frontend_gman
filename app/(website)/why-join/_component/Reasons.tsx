@@ -5,27 +5,27 @@ export default function Reasons() {
   const features = [
     {
       icon: "/asset/why_join1.png",
-      title: "It's Free",
+      title: "Narrative First",
       description:
-        "Sourcing fresh, locally grown produce and food that is healthy and nutritious is foundational to a healthy family.",
+        "Each project is documented as a clear story: problem, intent, and the interface decisions that followed.",
     },
     {
       icon: "/asset/why_join2.png",
-      title: "Better Nutrition",
+      title: "NDA-Respectful",
       description:
-        "Current farming methods have depleted the soil of important vitamins and trace minerals, negatively affecting your health. Small family farms and gardens don't have this problem.",
+        "Client work is anonymized and generalized so the thinking can be shared without exposing private details.",
     },
     {
       icon: "/asset/why_join3.png",
-      title: "Healthier Choices",
+      title: "Systems Thinking",
       description:
-        "Many obesity and health problems can be attributed to industrial agriculture's use of synthetic fertilizers, pesticides, herbicides and cancer causing glyphosate.",
+        "Visual systems, modular components, and reusable patterns keep the work consistent and buildable.",
     },
     {
       icon: "/asset/why_join4.png",
-      title: "Grow Your Business",
+      title: "Designed to Evolve",
       description:
-        "Tablefresh is more than just a platform to find fresh foods. With tablefresh, you can create, expand and grow your business.",
+        "The archive is updated with new experiments and case studies so the portfolio stays current.",
     },
   ]
 
@@ -33,7 +33,7 @@ export default function Reasons() {
     <div className="container mx-auto px-4 py-12 sm:px-6 lg:px-8 md:mt-[100px]">
       <div className=" ">
         <h2 className="text-xl sm:text-[24px] lg:text-[24px] font-bold text-[#272727] ">
-          Reasons to join tablefresh.
+          Reasons to work with Studio Signal.
         </h2>
       </div>
 

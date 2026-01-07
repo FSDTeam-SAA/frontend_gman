@@ -165,20 +165,11 @@ export function Navbar() {
   // }
 
   const navLinks = [
-    { name: "Home", href: "/" },
-    { name: "About", href: "/about" },
-    { name: "Mission", href: "/mission" },
-    { name: "Why Join?", href: "/why-join" },
-    { name: "Who should Join?", href: "/become-seller" },
-    { name: "Blog", href: "/blog" },
-    { name: "FAQ", href: "/faq" },
-    { name: "Contact", href: "/contact" },
-  ].filter(
-    (link) =>
-      link.href !== "/become-seller" ||
-      !isLoggedIn ||
-      (isLoggedIn && userRole !== "seller")
-  );
+    { name: "Work", href: "/#work" },
+    { name: "About", href: "/#about" },
+    { name: "Process", href: "/#process" },
+    { name: "Contact", href: "/#contact" },
+  ];
 
   const isActive = (href: string) => {
     if (href === "/") return pathname === "/";
@@ -230,22 +221,26 @@ export function Navbar() {
     <>
       <header className="sticky top-0 z-50 border-b bg-background">
         <div className="container mx-auto flex h-[90px] items-center justify-between px-2 lg:px-2">
-          <Link href="/" className="flex items-center gap-2">
+          <Link href="/" className="flex items-center gap-3">
             <Image
-              src="/asset/logo.png"
+              src="/asset/portfolio-logo.svg"
               width={40}
-              height={53}
-              alt="Table Fresh Logo"
-              className="h-[53px] w-[40px]"
+              height={40}
+              alt="Studio Signal logo"
+              className="h-10 w-10"
               priority
             />
             <div className="flex flex-col">
-              <div>
-                <p className="text-[16px] font-semibold text-black">TABLE</p>
-                <p className="text-[16px] font-normal text-[#039B06]">FRESH</p>
+              <div className="leading-4">
+                <p className="text-[15px] font-semibold tracking-[0.2em] text-[#0F172A]">
+                  STUDIO
+                </p>
+                <p className="text-[15px] font-semibold tracking-[0.2em] text-[#F97316]">
+                  SIGNAL
+                </p>
               </div>
-              <span className="text-[6px] font-medium leading-[120%] space-x-[5%] text-[#8F8F8F]">
-                Fresh & Healthy
+              <span className="text-[9px] font-medium uppercase tracking-[0.22em] text-[#64748B]">
+                Product + Frontend
               </span>
             </div>
           </Link>
@@ -258,8 +253,8 @@ export function Navbar() {
                     href={link.href}
                     className={`text-base font-medium transition-colors relative ${
                       isActive(link.href)
-                        ? "text-[#039B06] font-semibold"
-                        : "text-[#272727] hover:text-[#039B06] hover:font-semibold"
+                        ? "text-[#F97316] font-semibold"
+                        : "text-[#0F172A] hover:text-[#F97316] hover:font-semibold"
                     }`}
                   >
                     {link.name}
@@ -274,24 +269,24 @@ export function Navbar() {
               {isLoggedIn && userRole === "user" && (
                 <>
                   <Link href="/messages" className="flex" aria-label="Messages">
-                    <MessageCircle className="h-6 w-6 hover:text-[#039B06]" />
+                    <MessageCircle className="h-6 w-6 hover:text-[#F97316]" />
                   </Link>
                   <Link
                     href="/cart"
                     className="relative flex items-center"
                     aria-label="Shopping cart"
                   >
-                    <ShoppingCart className="h-6 w-6 hover:text-[#039B06]" />
+                    <ShoppingCart className="h-6 w-6 hover:text-[#F97316]" />
                     {isCartLoading ? (
-                      <span className="absolute -top-2 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-[#039B06] text-xs text-white">
+                      <span className="absolute -top-2 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-[#F97316] text-xs text-white">
                         ...
                       </span>
                     ) : cartError || !cart?.data?.items ? (
-                      <span className="absolute -top-2 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-[#039B06] text-xs text-white">
+                      <span className="absolute -top-2 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-[#F97316] text-xs text-white">
                         0
                       </span>
                     ) : (
-                      <span className="absolute -top-2 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-[#039B06] text-xs text-white">
+                      <span className="absolute -top-2 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-[#F97316] text-xs text-white">
                         {cart.data.items.length}
                       </span>
                     )}
@@ -302,16 +297,16 @@ export function Navbar() {
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <button className="rounded-full focus:outline-none focus:ring-0 focus:ring-offset-0 cursor-pointer">
-                      <CircleUser className="h-8 w-8 text-[#039B06]" />
+                      <CircleUser className="h-8 w-8 text-[#F97316]" />
                     </button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-48">
                     <DropdownMenuItem asChild>
                       <Link
                         href={getProfileLink()}
-                        className="w-full cursor-pointer hover:text-[#039B06]"
+                        className="w-full cursor-pointer hover:text-[#F97316]"
                       >
-                        <User className="mr-2 h-4 w-4 text-[#039B06]" />
+                        <User className="mr-2 h-4 w-4 text-[#F97316]" />
                         {userRole === "admin" || userRole === "seller"
                           ? "Dashboard"
                           : "Profile"}
@@ -321,9 +316,9 @@ export function Navbar() {
                       <DropdownMenuItem asChild>
                         <Link
                           href={getOrderHistoryLink()}
-                          className="w-full cursor-pointer hover:text-[#039B06]"
+                          className="w-full cursor-pointer hover:text-[#F97316]"
                         >
-                          <ShoppingBag className="mr-2 h-4 w-4 text-[#039B06]" />
+                          <ShoppingBag className="mr-2 h-4 w-4 text-[#F97316]" />
                           Order history
                         </Link>
                       </DropdownMenuItem>
@@ -342,20 +337,20 @@ export function Navbar() {
                 <Link href="/sign-up">
                   <Button
                     variant="default"
-                    className="bg-[#014A14] hover:bg-[#039B06] text-white cursor-pointer"
+                    className="bg-[#0F172A] hover:bg-[#1E293B] text-white cursor-pointer"
                   >
-                    Sign Up / Sign In
+                    Client Access
                   </Button>
                 </Link>
               )}
               <Button
                 variant="outline"
                 size="sm"
-                className="h-[40px] text-white bg-[#039B06] hover:bg-[#028a05] hover:text-white cursor-pointer whitespace-nowrap"
+                className="h-[40px] text-white bg-[#F97316] hover:bg-[#EA580C] hover:text-white cursor-pointer whitespace-nowrap"
                 onClick={handleDonateClick}
               >
                 <Heart className="mr-2 h-4 w-4" />
-                Donate
+                Support
               </Button>
             </div>
 
@@ -363,11 +358,11 @@ export function Navbar() {
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-[35px] w-auto px-2 text-white bg-[#039B06] hover:bg-[#028a05] hover:text-white cursor-pointer whitespace-nowrap"
+                className="h-[35px] w-auto px-2 text-white bg-[#F97316] hover:bg-[#EA580C] hover:text-white cursor-pointer whitespace-nowrap"
                 onClick={handleDonateClick}
-                aria-label="Donate"
+                aria-label="Support"
               >
-                Donate
+                Support
               </Button>
               <Button
                 variant="ghost"
@@ -410,24 +405,24 @@ export function Navbar() {
                 onClick={() => setIsMenuOpen(false)}
               >
                 <Image
-                  src="/asset/logo.png"
+                  src="/asset/portfolio-logo.svg"
                   width={40}
-                  height={53}
-                  alt="Table Fresh Logo"
-                  className="h-[53px] w-[40px]"
+                  height={40}
+                  alt="Studio Signal logo"
+                  className="h-10 w-10"
                   priority
                 />
                 <div className="flex flex-col">
                   <div>
-                    <p className="text-[16px] font-semibold text-black">
-                      TABLE
+                    <p className="text-[16px] font-semibold text-[#0F172A]">
+                      STUDIO
                     </p>
-                    <p className="text-[16px] font-normal text-[#039B06]">
-                      FRESH
+                    <p className="text-[16px] font-normal text-[#F97316]">
+                      SIGNAL
                     </p>
                   </div>
-                  <span className="text-[6px] font-medium leading-[120%] space-x-[5%] text-[#8F8F8F]">
-                    Fresh & Healthy
+                  <span className="text-[6px] font-medium leading-[120%] space-x-[5%] text-[#64748B]">
+                    Product + Frontend
                   </span>
                 </div>
               </Link>
@@ -451,8 +446,8 @@ export function Navbar() {
                       }}
                       className={`block text-lg font-medium transition-colors py-2 ${
                         isActive(link.href)
-                          ? "text-[#039B06] font-semibold"
-                          : "text-[#272727] hover:text-[#039B06] hover:font-semibold"
+                          ? "text-[#F97316] font-semibold"
+                          : "text-[#0F172A] hover:text-[#F97316] hover:font-semibold"
                       }`}
                     >
                       {link.name}
@@ -468,7 +463,7 @@ export function Navbar() {
                       <div className="flex gap-4 mb-4">
                         <Link
                           href="/messages"
-                          className="flex items-center gap-2 text-[#272727] hover:text-[#039B06]"
+                          className="flex items-center gap-2 text-[#0F172A] hover:text-[#F97316]"
                           onClick={() => setIsMenuOpen(false)}
                         >
                           <MessageCircle className="h-5 w-5" />
@@ -476,7 +471,7 @@ export function Navbar() {
                         </Link>
                         <Link
                           href="/cart"
-                          className="flex items-center gap-2 text-[#272727] hover:text-[#039B06]"
+                          className="flex items-center gap-2 text-[#0F172A] hover:text-[#F97316]"
                           onClick={() => setIsMenuOpen(false)}
                         >
                           <ShoppingCart className="h-5 w-5" />
@@ -495,7 +490,7 @@ export function Navbar() {
                     )}
                     <Link
                       href={getProfileLink()}
-                      className="flex items-center gap-2 text-[#272727] hover:text-[#039B06] py-2"
+                      className="flex items-center gap-2 text-[#0F172A] hover:text-[#F97316] py-2"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       <User className="h-5 w-5" />
@@ -506,7 +501,7 @@ export function Navbar() {
                     {userRole === "user" && (
                       <Link
                         href={getOrderHistoryLink()}
-                        className="flex items-center gap-2 text-[#272727] hover:text-[#039B06] py-2"
+                        className="flex items-center gap-2 text-[#0F172A] hover:text-[#F97316] py-2"
                         onClick={() => setIsMenuOpen(false)}
                       >
                         <ShoppingBag className="h-5 w-5" />
@@ -528,9 +523,9 @@ export function Navbar() {
                   <Link href="/sign-up" onClick={() => setIsMenuOpen(false)}>
                     <Button
                       variant="default"
-                      className="w-full bg-[#014A14] hover:bg-[#039B06] text-white mb-4"
+                      className="w-full bg-[#0F172A] hover:bg-[#1E293B] text-white mb-4"
                     >
-                      Sign Up
+                      Client Access
                     </Button>
                   </Link>
                 )}
@@ -544,27 +539,25 @@ export function Navbar() {
         <DialogContent className="w-[90%] max-w-md rounded-xl p-6 sm:p-8">
           <DialogHeader className="relative flex flex-col items-center text-center">
             <Image
-              src="/asset/logo.png"
+              src="/asset/portfolio-logo.svg"
               width={40}
-              height={53}
-              alt="Table Fresh Logo"
-              className="mb-4 h-[53px] w-[40px]"
+              height={40}
+              alt="Studio Signal logo"
+              className="mb-4 h-10 w-10"
               priority
             />
             <DialogTitle className="text-2xl font-semibold text-[#272727]">
-              Make a Secure Donation
+              Support the Studio
             </DialogTitle>
           </DialogHeader>
           <div className="mt-4 text-justify text-[18px] text-[#595959] leading-[150%]">
             <p className="mb-4">
-              I want to thank everyone who has signed up and is using our
-              platform. Tablefresh is free to use, building community and
-              connecting everyone to fresh nutritious food. Any and all
-              donations are greatly appreciated, ensuring the future of the best
-              fresh food global platform.
+              Thanks for spending time with this archive. Your support helps
+              keep the experiments independent, the case studies polished, and
+              the tools accessible.
             </p>
             <p className="text-[#595959] mt-7">
-              Thank You <br /> from the <br /> Tablefresh Team
+              Appreciate you, <br /> Studio Signal
             </p>
           </div>
           <div className="mt-6 flex flex-col items-center gap-4">
@@ -572,13 +565,13 @@ export function Navbar() {
               onChange={(e) => setAmount(e.target.value)}
               type="number"
               placeholder="Enter your Amount..."
-              className="w-full rounded-md border border-gray-300 p-3 text-center text-lg focus:border-[#039B06] focus:ring-[#039B06]"
+              className="w-full rounded-md border border-gray-300 p-3 text-center text-lg focus:border-[#F97316] focus:ring-[#F97316]"
             />
             <Button
               onClick={handleDonation}
-              className="w-full rounded-md bg-[#039B06] py-3 text-lg font-semibold text-white hover:bg-[#028a05]"
+              className="w-full rounded-md bg-[#F97316] py-3 text-lg font-semibold text-white hover:bg-[#EA580C]"
             >
-              Donate Now
+              Support Now
             </Button>
           </div>
         </DialogContent>

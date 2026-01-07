@@ -93,30 +93,30 @@ export default function ResetPasswordcontent() {
           <div className="mb-8 backdrop-blur-[50px] bg-white/23 shadow-[0px_4px_4px_0px_rgba(93,93,93,0.25)] p-5 rounded-[16px]">
             <div className="flex items-start gap-2">
               <Image
-                src="/asset/logo.png"
+                src="/asset/portfolio-logo.svg"
                 width={40}
                 height={53}
-                alt="Table Fresh Logo"
+                alt="Studio Signal logo"
                 className="h-[53px] w-[40px]"
               />
               <div className="flex flex-col">
-                <div className="">
-                  <p className="text-[16px] font-semibold text-black">TABLE</p>
-                  <p className="text-[16px] font-normal text-[#039B06]">
-                    FRESH
-                  </p>
+                  <div className="">
+                    <p className="text-[16px] font-semibold text-[#0F172A]">STUDIO</p>
+                    <p className="text-[16px] font-normal text-[#F97316]">
+                      SIGNAL
+                    </p>
+                  </div>
+                  <span className="text-[6px] font-medium leading-[120%] text-[#64748B]">
+                    Product + Frontend
+                  </span>
                 </div>
-                <span className="text-[6px] font-medium leading-[120%] text-[#8F8F8F]">
-                  Fresh & Healthy
-                </span>
-              </div>
             </div>
           </div>
 
-          <h1 className="text-4xl font-bold mb-4">Welcome to Table Fresh</h1>
-          <p className="text-lg opacity-90">
-            Discover fresh, local produce from farms around the world
-          </p>
+          <h1 className="text-4xl font-bold mb-4">Welcome to Studio Signal</h1>
+            <p className="text-lg opacity-90">
+              Curated projects, anonymized case studies, and bold experiments.
+            </p>
         </div>
       </div>
 
